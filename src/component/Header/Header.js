@@ -28,12 +28,12 @@ export default function Header() {
                             <div className="navbar-nav mx-auto">
                                 <NavLink to={"/"} className="nav-item nav-link">Home</NavLink>
                                 <NavLink to={"/shop"} className="nav-item nav-link">Shop</NavLink>
-                                <NavLink to={"/shopDetail"} className="nav-item nav-link">Shop Detail</NavLink>
+                                <NavLink to={"/shop_detail"} className="nav-item nav-link">Shop Detail</NavLink>
                                 <div className="nav-item dropdown">
                                     <a href="#" className="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                                     <div className="dropdown-menu m-0 bg-secondary rounded-0">
                                         <NavLink to={"/cart"} className="dropdown-item">Cart</NavLink>
-                                        <NavLink to={"chackout"} className="dropdown-item">Chackout</NavLink>
+                                        <NavLink to={"/chackout"} className="dropdown-item">Chackout</NavLink>
                                         <NavLink to={"/testimonial"} className="dropdown-item">Testimonial</NavLink>
                                         <NavLink to={"/error"} className="dropdown-item">404 Page</NavLink>
                                     </div>
