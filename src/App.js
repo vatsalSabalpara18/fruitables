@@ -1,3 +1,4 @@
+import { Route, Routes } from "react-router-dom";
 import Footer from "./component/Footer/Footer";
 import Header from "./component/Header/Header";
 import Page404 from "./container/404Page/Page404";
@@ -13,6 +14,17 @@ function App() {
   return (
     <>
       <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/shop" element={<Shop />} />
+        <Route path="/shop/:id" element={<ShopDetails />} />
+        <Route path="/shopDetail" element={<ShopDetails />} />
+        <Route path="/error" element={<Page404 />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/chackout" element={<ChackOut />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/testimonial" element={<Testimonial />} />
+      </Routes>
       {/* <Home /> */}
       {/* <Shop /> */}
       {/* <ShopDetails /> */}
@@ -20,7 +32,7 @@ function App() {
       {/* <Cart /> */}
       {/* <ChackOut /> */}
       {/* <Contact /> */}
-      <Testimonial />
+      {/* <Testimonial /> */}
       <Footer />
     </>
   );
