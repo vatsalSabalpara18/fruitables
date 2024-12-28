@@ -3,7 +3,7 @@ import React from 'react';
 function SubCategory(props) {
     return (
         <div>
-            SubCategory
+            <h1>SubCategory</h1>
         </div>
     );
 }
