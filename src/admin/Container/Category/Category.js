@@ -3,25 +3,15 @@ import { Box, Button, TextField, Dialog, DialogActions, DialogContent, DialogTit
 import { DataGrid, GridDeleteIcon } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import EditIcon from '@mui/icons-material/Edit';
+import { object, string } from 'yup';
+import { useFormik } from 'formik';
 
-// function createData(name, description) {
-//     return { name, description };
-// }
-
-// const rows = [
-//     createData('Frozen yoghurt', 'lorem ipsum dolor sit amet consectetur adipisicing elit. '),
-//     createData('Ice cream sandwich', 'lorem ipsum dolor sit amet consectetur adipisicing elit. '),
-//     createData('Eclair', 'lorem ipsum dolor sit amet consectetur adipisicing elit. '),
-//     createData('Cupcake', 'lorem ipsum dolor sit amet consectetur adipisicing elit. '),
-//     createData('Gingerbread', 'lorem ipsum dolor sit amet consectetur adipisicing elit. '),
-// ];
-
-const columns = [    
-    { field: 'name', headerName: 'Name', width: 200 },
-    { field: 'description', headerName: 'Description', width: 400 },
-    { 
+const columns = [
+    { field: 'name', headerName: 'Name', width: 350 },
+    { field: 'description', headerName: 'Description', width: 650 },
+    {
         field: 'action',
-        headerName: 'Action', 
+        headerName: 'Action',
         width: 200,
         renderCell: (params) => (
             <strong>
@@ -33,19 +23,11 @@ const columns = [
                 </IconButton>
             </strong>
         ),
-    },
-    // {
-    //     field: 'fullName',
-    //     headerName: 'Full name',
-    //     description: 'This column has a value getter and is not sortable.',
-    //     sortable: false,
-    //     width: 160,
-    //     valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-    // },
+    },    
 ];
 
 const rows = [
-    { id:'1', name: 'Snow', description: 'lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
+    { id: '1', name: 'Snow', description: 'lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
     { id: '2', name: 'Lannister', description: 'lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
     { id: '3', name: 'Lannister', description: 'lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
     { id: '4', name: 'Stark', description: 'lorem ipsum dolor sit amet consectetur adipisicing elit. ' },
@@ -65,6 +47,26 @@ function Category(props) {
         setOpen(true);
     };
 
+    const categorySchema = object({
+        name: string().required(),
+        description: string().required(),
+    })
+
+    const formik = useFormik({
+        initialValues: {
+            name: '',
+            description: '',
+        },
+        validationSchema: categorySchema,
+        onSubmit: (values, {resetForm} ) => {
+            alert(JSON.stringify(values, null, 2));
+            resetForm();    
+            handleClose();
+        },
+    });
+
+    const { handleSubmit, handleChange, handleBlur, values, errors, touched } = formik;
+
     const handleClose = () => {
         setOpen(false);
     };
@@ -77,48 +79,45 @@ function Category(props) {
                 </Button>
                 <Dialog
                     open={open}
-                    onClose={handleClose}
-                    PaperProps={{
-                        component: 'form',
-                        onSubmit: (event) => {
-                            event.preventDefault();
-                            const formData = new FormData(event.currentTarget);
-                            const formJson = Object.fromEntries(formData.entries());
-                            const email = formJson.email;
-                            console.log(email);
-                            handleClose();
-                        },
-                    }}
+                    onClose={handleClose}                    
                 >
-                    <DialogTitle>Category</DialogTitle>
-                    <DialogContent>
-                        <TextField
-                            autoFocus
-                            required
-                            margin="dense"
-                            id="name"
-                            name="name"
-                            label="name"
-                            type="text"
-                            fullWidth
-                            variant="standard"
-                        />
-                        <TextField
-                            autoFocus
-                            required
-                            margin="dense"
-                            id="description"
-                            name="description"
-                            label="description"
-                            type="text"
-                            fullWidth
-                            variant="standard"
-                        />
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleClose}>Cancel</Button>
-                        <Button type="submit">Submit</Button>
-                    </DialogActions>
+                    <form onSubmit={handleSubmit}>
+                        <DialogTitle>Category</DialogTitle>
+                        <DialogContent>
+                            <TextField   
+                                onBlur={handleBlur}                             
+                                margin="dense"
+                                id="name"
+                                name="name"
+                                label="name"
+                                type="text"
+                                fullWidth
+                                variant="standard"
+                                onChange={handleChange}
+                                value={values.name}
+                                error={errors.name && touched.name}
+                                helperText={errors.name && touched.name ? errors.name : ''}
+                            />
+                            <TextField                                
+                                margin="dense"
+                                id="description"
+                                name="description"
+                                label="description"
+                                type="text"
+                                fullWidth
+                                variant="standard"
+                                onBlur={handleBlur}
+                                onChange={handleChange}
+                                value={values.description}
+                                error={errors.description && touched.description}
+                                helperText={errors.description && touched.description ? errors.description : ''}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose}>Cancel</Button>
+                            <Button type="submit">Submit</Button>
+                        </DialogActions>
+                    </form>
                 </Dialog>
             </Box>
             <Box sx={{ mt: 5 }}>
@@ -131,7 +130,7 @@ function Category(props) {
                         checkboxSelection
                         sx={{ border: 0 }}
                     />
-                </Paper>  
+                </Paper>
             </Box>
         </Box>
     );

@@ -10,11 +10,13 @@
     "@mui/x-data-grid": "^7.23.5",
     "bootstrap": "^5.3.3",
     "cra-template": "1.2.0",
+    "formik": "^2.4.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.0.2",
     "react-scripts": "5.0.1",
-    "reactstrap": "^9.2.3"
+    "reactstrap": "^9.2.3",
+    "yup": "^1.6.1"
   },
   "scripts": {
     "start": "react-scripts start",
