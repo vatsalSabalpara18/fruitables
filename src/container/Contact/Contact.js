@@ -1,6 +1,29 @@
 import React from 'react';
+import { object, string } from 'yup';
+import { useFormik } from 'formik';
+import { TextField, Button } from '@mui/material';
 
 function Contact(props) {
+    const contactSchema = object({
+        name: string().required(),
+        email: string().email().required(),
+        message: string().required(),
+    })
+
+    const formik = useFormik({
+        initialValues: {
+            name: '',
+            email: '',
+            message: '',
+        },
+        validationSchema: contactSchema,
+        onSubmit: (values, { resetForm }) => {
+            alert(JSON.stringify(values, null, 2));
+            resetForm();
+        },
+    });
+
+    const { handleSubmit, handleChange, handleBlur, values, errors, touched } = formik;    
     return (
         <>
 
@@ -31,11 +54,53 @@ function Contact(props) {
                                 </div>
                             </div>
                             <div className="col-lg-7">
-                                <form action className>
-                                    <input type="text" className="w-100 form-control border-0 py-3 mb-4" placeholder="Your Name" />
-                                    <input type="email" className="w-100 form-control border-0 py-3 mb-4" placeholder="Enter Your Email" />
-                                    <textarea className="w-100 form-control border-0 mb-4" rows={5} cols={10} placeholder="Your Message" defaultValue={""} />
-                                    <button className="w-100 btn form-control border-secondary py-3 bg-white text-primary " type="submit">Submit</button>
+                                <form onSubmit={handleSubmit} >
+                                    <TextField
+                                        type="text"
+                                        variant="standard"
+                                        className="w-100 py-3 mb-4"
+                                        placeholder="Your Name"
+                                        name="name"
+                                        label="Name"
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        value={values.name}
+                                        error={errors.name && touched.name}
+                                        helperText={errors.name && touched.name ? errors.name : null}
+                                    />
+                                    <TextField
+                                        type="email"
+                                        variant="standard"
+                                        className="w-100 py-3 mb-4"
+                                        placeholder="Enter Your Email"
+                                        name="email"
+                                        label="Email"
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        value={values.email}
+                                        error={errors.email && touched.email}
+                                        helperText={errors.email && touched.email ? errors.email : null}
+                                    />
+                                    <TextField
+                                        id="standard-multiline-static"
+                                        label="Message"
+                                        multiline
+                                        rows={3}
+                                        variant="standard"
+                                        className="w-100 py-3 mb-4"
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        value={values.message}
+                                        name="message"
+                                        error={errors.message && touched.message}
+                                        helperText={errors.message && touched.message ? errors.message : null}
+                                    />                                    
+                                    <Button
+                                        className="w-100 btn py-3 bg-white text-primary rounded-10"
+                                        variant="outlined"
+                                        type="submit">
+                                        Submit
+                                    </Button>
                                 </form>
                             </div>
                             <div className="col-lg-5">
