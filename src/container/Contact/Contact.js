@@ -1,14 +1,63 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { object, string } from 'yup';
 import { useFormik } from 'formik';
-import { TextField, Button } from '@mui/material';
+import { TextField, Button, Box, Paper, IconButton } from '@mui/material';
+import { DataGrid, GridDeleteIcon } from '@mui/x-data-grid';
+import EditIcon from '@mui/icons-material/Edit';
 
 function Contact(props) {
+    const [contactTable, setContactTable] = React.useState([]);
+
+    const getContactData = () => {
+        const localStorageContact = JSON.parse(localStorage.getItem('contact'));
+        if (localStorageContact) {
+            setContactTable(localStorageContact);
+        }
+    }
+
+    useEffect(() => {
+        getContactData();
+    },[]);
+    
     const contactSchema = object({
         name: string().required(),
         email: string().email().required(),
         message: string().required(),
     })
+
+    const paginationModel = { page: 0, pageSize: 5 };
+
+    const columns = [
+        { field: 'name', headerName: 'Name', width: 250 },
+        { field: 'email', headerName: 'Email', width: 350 },
+        { field: 'message', headerName: 'Message', width: 350 },
+        {
+            field: 'action',
+            headerName: 'Action',
+            width: 200,
+            renderCell: (params) => (
+                <strong>
+                    <IconButton aria-label="delete" onClick={() => console.log(params.row.id)}>
+                        <GridDeleteIcon />
+                    </IconButton>
+                    <IconButton aria-label="edit" onClick={() => console.log(params.row.id)}>
+                        <EditIcon />
+                    </IconButton>
+                </strong>
+            ),
+        },
+    ];
+
+    const addContact = (data) => {
+        const contactData = JSON.parse(localStorage.getItem('contact'));
+        if (contactData) {
+            contactData.push({...data, id: +new Date()});
+            localStorage.setItem('contact', JSON.stringify(contactData));
+            setContactTable(contactData);
+        } else {
+            localStorage.setItem('contact', JSON.stringify([{...data, id: +new Date()}]));
+        }
+    }
 
     const formik = useFormik({
         initialValues: {
@@ -18,7 +67,8 @@ function Contact(props) {
         },
         validationSchema: contactSchema,
         onSubmit: (values, { resetForm }) => {
-            alert(JSON.stringify(values, null, 2));
+            // alert(JSON.stringify(values, null, 2));
+            addContact(values);
             resetForm();
         },
     });
@@ -129,6 +179,18 @@ function Contact(props) {
                         </div>
                     </div>
                 </div>
+                <Box sx={{ mt: 5 }}>
+                    <Paper sx={{ height: 400, width: '100%' }}>
+                        <DataGrid
+                            rows={contactTable}
+                            columns={columns}
+                            initialState={{ pagination: { paginationModel } }}
+                            pageSizeOptions={[5, 10]}
+                            checkboxSelection
+                            sx={{ border: 0 }}
+                        />
+                    </Paper>
+                </Box>
             </div>
             {/*Contact End*/}
 

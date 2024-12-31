@@ -14,7 +14,7 @@ function Category(props) {
     const [open, setOpen] = React.useState(false);
     const [categoryTable, setCategoryTable] = React.useState([]);
 
-    const getCategoryData = (data) => {
+    const getCategoryData = () => {
         const localStorageCategory = JSON.parse(localStorage.getItem('category'));
         if (localStorageCategory) {
             setCategoryTable(localStorageCategory);
