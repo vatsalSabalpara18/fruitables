@@ -13,6 +13,7 @@ const paginationModel = { page: 0, pageSize: 5 };
 function Category(props) {
     const [open, setOpen] = React.useState(false);
     const [categoryTable, setCategoryTable] = React.useState([]);
+    const [isEdit, setIsEdit] = React.useState(null);
 
     const getCategoryData = () => {
         const localStorageCategory = JSON.parse(localStorage.getItem('category'));
@@ -26,14 +27,29 @@ function Category(props) {
         getCategoryData();
     }, []);
 
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
     const handleDelete = (id) => { 
         const localData = JSON.parse(localStorage.getItem('category'));
+        // const index = localData.findIndex((item) => item.id === id);
+        // localData.splice(index, 1);
         const newData = localData.filter(data => data.id !== id);
         localStorage.setItem('category', JSON.stringify(newData));
         setCategoryTable(newData);
      }
 
-
+    const handleEdit = (data) => {
+        console.log("handleEdit",data);        
+        const localData = JSON.parse(localStorage.getItem('category'));
+        const index = localData.findIndex((item) => item.id === data.id);
+        console.log("index",index);
+        handleClickOpen();
+        setIsEdit(index);        
+        setValues(data);
+    }
+    
     const columns = [
         { field: 'name', headerName: 'Name', width: 350 },
         { field: 'description', headerName: 'Description', width: 650 },
@@ -46,18 +62,13 @@ function Category(props) {
                     <IconButton aria-label="delete" onClick={() => handleDelete(params.row.id)}>
                         <GridDeleteIcon />
                     </IconButton>
-                    <IconButton aria-label="edit" onClick={() => console.log(params.row.id)}>
+                    <IconButton aria-label="edit" onClick={() => handleEdit(params.row)}>
                         <EditIcon />
                     </IconButton>
                 </strong>
             ),
         },
-    ];
-
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
+    ];  
 
     const categorySchema = object({
         name: string().required(),
@@ -67,11 +78,18 @@ function Category(props) {
     const addCategory = (values) => {
         const localData = JSON.parse(localStorage.getItem('category'));        
         if (localData) {
-            localData.push({...values, id: Date.now()});
+            if(isEdit || isEdit === 0) {                
+                const id = localData[isEdit].id;
+                localData[isEdit] = {...values, id};                              
+                setIsEdit(null);                
+            } else {
+                localData.push({...values, id: Date.now()});
+            }
             localStorage.setItem('category', JSON.stringify(localData));
             setCategoryTable(localData);
         } else {
             localStorage.setItem('category', JSON.stringify([{...values, id: Date.now()}]));
+            setCategoryTable([{...values, id: Date.now()}]);
         }
     }
 
@@ -82,17 +100,19 @@ function Category(props) {
         },
         validationSchema: categorySchema,
         onSubmit: (values, { resetForm }) => {
-            // alert(JSON.stringify(values, null, 2));
+            // alert(JSON.stringify(values, null, 2));            
             addCategory(values);
             resetForm();
             handleClose();
         },
     });
 
-    const { handleSubmit, handleChange, handleBlur, values, errors, touched } = formik;
+    const { handleSubmit, handleChange, handleBlur, values, errors, touched, setValues, resetForm } = formik;
 
     const handleClose = () => {
         setOpen(false);
+        resetForm();
+        setIsEdit(null);        
     };
 
 
@@ -141,7 +161,7 @@ function Category(props) {
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleClose}>Cancel</Button>
-                            <Button type="submit">Submit</Button>
+                            <Button type="submit">{ (isEdit || isEdit === 0) ? "Update" : "Submit" }</Button>
                         </DialogActions>
                     </form>
                 </Dialog>
