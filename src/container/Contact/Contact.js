@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 
 function Contact(props) {
     const [contactTable, setContactTable] = React.useState([]);
+    const [isEdit, setIsEdit] = React.useState(null);
 
     const getContactData = () => {
         const localStorageContact = JSON.parse(localStorage.getItem('contact'));
@@ -27,6 +28,22 @@ function Contact(props) {
 
     const paginationModel = { page: 0, pageSize: 5 };
 
+    const handleDelete = (id) => {
+        const localData = JSON.parse(localStorage.getItem('contact'));
+        const newData = localData.filter(data => data.id !== id);
+        localStorage.setItem('contact', JSON.stringify(newData));
+        setContactTable(newData);
+    }
+
+    const handleEdit = (data) => {
+        console.log("handleEdit", data);
+        const localData = JSON.parse(localStorage.getItem('contact'));
+        const index = localData.findIndex((item) => item.id === data.id);
+        console.log("index", index);        
+        setIsEdit(index);
+        setValues(data);
+    }
+
     const columns = [
         { field: 'name', headerName: 'Name', width: 250 },
         { field: 'email', headerName: 'Email', width: 350 },
@@ -37,10 +54,10 @@ function Contact(props) {
             width: 200,
             renderCell: (params) => (
                 <strong>
-                    <IconButton aria-label="delete" onClick={() => console.log(params.row.id)}>
+                    <IconButton aria-label="delete" onClick={() => handleDelete(params.row.id)}>
                         <GridDeleteIcon />
                     </IconButton>
-                    <IconButton aria-label="edit" onClick={() => console.log(params.row.id)}>
+                    <IconButton aria-label="edit" onClick={() => handleEdit(params.row)}>
                         <EditIcon />
                     </IconButton>
                 </strong>
@@ -56,6 +73,7 @@ function Contact(props) {
             setContactTable(contactData);
         } else {
             localStorage.setItem('contact', JSON.stringify([{...data, id: +new Date()}]));
+            setContactTable([{...data, id: +new Date()}]);
         }
     }
 
@@ -73,7 +91,7 @@ function Contact(props) {
         },
     });
 
-    const { handleSubmit, handleChange, handleBlur, values, errors, touched } = formik;    
+    const { handleSubmit, handleChange, handleBlur, values, errors, touched, setValues } = formik;    
     return (
         <>
 
@@ -149,7 +167,9 @@ function Contact(props) {
                                         className="w-100 btn py-3 bg-white text-primary rounded-10"
                                         variant="outlined"
                                         type="submit">
-                                        Submit
+                                        {
+                                            isEdit || isEdit === 0 ? "Update" : "Submit"
+                                        }
                                     </Button>
                                 </form>
                             </div>
