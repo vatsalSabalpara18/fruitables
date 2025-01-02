@@ -13,14 +13,15 @@ const paginationModel = { page: 0, pageSize: 5 };
 function Category(props) {
     const [open, setOpen] = React.useState(false);
     const [categoryTable, setCategoryTable] = React.useState([]);
-    const [isEdit, setIsEdit] = React.useState(null);
+    // const [isEdit, setIsEdit] = React.useState(null);
+    const [isUpdate, setIsUpdate] = React.useState(false);
 
     const getCategoryData = () => {
         const localStorageCategory = JSON.parse(localStorage.getItem('category'));
         if (localStorageCategory) {
             setCategoryTable(localStorageCategory);
         }
-        
+
     }
 
     useEffect(() => {
@@ -31,25 +32,22 @@ function Category(props) {
         setOpen(true);
     };
 
-    const handleDelete = (id) => { 
+    const handleDelete = (id) => {
         const localData = JSON.parse(localStorage.getItem('category'));
         // const index = localData.findIndex((item) => item.id === id);
         // localData.splice(index, 1);
         const newData = localData.filter(data => data.id !== id);
         localStorage.setItem('category', JSON.stringify(newData));
         setCategoryTable(newData);
-     }
+    }
 
-    const handleEdit = (data) => {
-        console.log("handleEdit",data);        
-        const localData = JSON.parse(localStorage.getItem('category'));
-        const index = localData.findIndex((item) => item.id === data.id);
-        console.log("index",index);
+    const handleEdit = (data) => {                              
         handleClickOpen();
-        setIsEdit(index);        
+        // setIsEdit(index);        
+        setIsUpdate(true);
         setValues(data);
     }
-    
+
     const columns = [
         { field: 'name', headerName: 'Name', width: 350 },
         { field: 'description', headerName: 'Description', width: 650 },
@@ -68,28 +66,38 @@ function Category(props) {
                 </strong>
             ),
         },
-    ];  
+    ];
 
     const categorySchema = object({
         name: string().required(),
         description: string().required(),
     })
 
+    const updateCategory = (values) => {  
+        const localData = JSON.parse(localStorage.getItem('category'));
+        const index = localData.findIndex((item) => item.id === values.id);
+        localData[index] = values;
+        localStorage.setItem('category', JSON.stringify(localData));
+        setCategoryTable(localData);
+        setIsUpdate(false);
+    }
+
     const addCategory = (values) => {
-        const localData = JSON.parse(localStorage.getItem('category'));        
+        const localData = JSON.parse(localStorage.getItem('category'));
         if (localData) {
-            if(isEdit || isEdit === 0) {                
-                const id = localData[isEdit].id;
-                localData[isEdit] = {...values, id};                              
-                setIsEdit(null);                
-            } else {
-                localData.push({...values, id: Date.now()});
-            }
+            // if (isEdit || isEdit === 0) {
+            //     const id = localData[isEdit].id;
+            //     localData[isEdit] = { ...values, id };
+            //     setIsEdit(null);
+            // } else {
+            //     localData.push({ ...values, id: Date.now() });
+            // }
+            localData.push({ ...values, id: Date.now() });
             localStorage.setItem('category', JSON.stringify(localData));
             setCategoryTable(localData);
         } else {
-            localStorage.setItem('category', JSON.stringify([{...values, id: Date.now()}]));
-            setCategoryTable([{...values, id: Date.now()}]);
+            localStorage.setItem('category', JSON.stringify([{ ...values, id: Date.now() }]));
+            setCategoryTable([{ ...values, id: Date.now() }]);
         }
     }
 
@@ -101,7 +109,11 @@ function Category(props) {
         validationSchema: categorySchema,
         onSubmit: (values, { resetForm }) => {
             // alert(JSON.stringify(values, null, 2));            
-            addCategory(values);
+            if(isUpdate){
+                updateCategory(values);                
+            } else {
+                addCategory(values);
+            }
             resetForm();
             handleClose();
         },
@@ -112,7 +124,8 @@ function Category(props) {
     const handleClose = () => {
         setOpen(false);
         resetForm();
-        setIsEdit(null);        
+        // setIsEdit(null);  
+        setIsUpdate(false);
     };
 
 
@@ -161,7 +174,10 @@ function Category(props) {
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleClose}>Cancel</Button>
-                            <Button type="submit">{ (isEdit || isEdit === 0) ? "Update" : "Submit" }</Button>
+                            {/* (isEdit || isEdit === 0) ? "Update" : "Submit" */}
+                            <Button type="submit">{
+                                isUpdate ? "Update" : "Submit"
+                            }</Button>
                         </DialogActions>
                     </form>
                 </Dialog>

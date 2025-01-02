@@ -20,6 +20,7 @@ import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import CategoryIcon from '@mui/icons-material/Category';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
+import CountertopsIcon from '@mui/icons-material/Countertops';
 import { NavLink } from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -124,6 +125,11 @@ export default function Layout({ children }) {
             label: 'SubCategory',
             icon: <AnalyticsIcon />,
             to: '/admin/sub_category'
+        },
+        {
+            label: 'Counter',
+            icon: <CountertopsIcon />,
+            to: '/admin/counter'
         }
     ];
 
