@@ -1,15 +1,17 @@
 import { Button } from '@mui/material'
 import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { decrement, increment } from '../../../redux/action/counter.action'
 
 function Counter() {
-
-    const handleIncrement = () => {
-        increment();
+    const dispatch = useDispatch();
+    const count = useSelector(state => state.counter.count); // 4
+    const handleIncrement = () => { // 1
+        dispatch(increment());
     }
     const handleDecrement = () => {
-        decrement();
-    }
+        dispatch(decrement());
+    }    
   return (
     <>
           <h1>Counter</h1>
@@ -17,7 +19,7 @@ function Counter() {
                 Increment
           </Button>
           {' '}
-          <span>0</span>
+          <span>{count}</span>
           {' '}
           <Button onClick={handleDecrement} variant="contained" color="primary">
               decrement
