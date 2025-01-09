@@ -1,5 +1,6 @@
 import { combineReducers } from "redux";
 import { counterReducer } from "./counter.reducer";
+import subcategorySlice from "./slice/subcategory.slice";
 
 // export const intialState = {
 //     value: 0
@@ -11,5 +12,6 @@ import { counterReducer } from "./counter.reducer";
 // }
 
 export const rootReducer = combineReducers({
-    counter: counterReducer
+    counter: counterReducer,
+    subcategory: subcategorySlice
 });

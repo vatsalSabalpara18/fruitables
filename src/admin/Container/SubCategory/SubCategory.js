@@ -5,16 +5,26 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Box, FormControl, FormHelperText } from '@mui/material';
+import { DataGrid, GridDeleteIcon } from '@mui/x-data-grid';
+import Paper from '@mui/material/Paper';
+import { Box, FormControl, FormHelperText, IconButton } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { number, object, string } from 'yup';
 import { useFormik } from 'formik';
+import { useDispatch, useSelector } from 'react-redux';
+import { addSubCategories, getSubCategories } from '../../../redux/reducer/slice/subcategory.slice';
 
 function SubCategory(props) {
+    const dispatch = useDispatch();
     const [open, setOpen] = React.useState(false);
     const [categoryList, setCategoryList] = React.useState([]);
+
+    const subCategory = useSelector(state => state.subcategory);  
+    
+    console.log("SubCategory", subCategory);
 
     const getCategoryList = () => {
         const localCategoryData = JSON.parse(localStorage.getItem('category'));
@@ -23,9 +33,47 @@ function SubCategory(props) {
         }
     }
 
+    const handleDelete = (id) => {}
+
+    const handleEdit = (data) => {}
+
+    const columns = [
+        { 
+            field: 'category', 
+            headerName: 'Category', 
+            width: 130,
+            valueGetter: (value) => {                   
+                return categoryList.find(item => item.id === value)?.name;                
+            } 
+        },
+        { field: 'name', headerName: 'Name', width: 130 },
+        { field: 'description', headerName: 'Description', width: 130 },
+        {
+            field: 'action',
+            headerName: 'Action',
+            width: 200,
+            renderCell: (params) => (
+                <strong>
+                    <IconButton aria-label="delete" onClick={() => handleDelete(params.row.id)}>
+                        <GridDeleteIcon />
+                    </IconButton>
+                    <IconButton aria-label="edit" onClick={() => handleEdit(params.row)}>
+                        <EditIcon />
+                    </IconButton>
+                </strong>
+            ),
+        },
+    ];
+
+    const paginationModel = { page: 0, pageSize: 5 };
+
+    const getSubCategoryList = () => {
+        dispatch(getSubCategories());
+    }
+
     React.useEffect(() => {
-        getCategoryList();
-        console.log(categoryList);
+        getCategoryList();     
+        getSubCategoryList();   
     },[]);
 
     const SubCategorySchema = object({
@@ -33,6 +81,11 @@ function SubCategory(props) {
         name: string().required(),
         description: string().required()
     });
+
+    const AddSubCategory = (values) => { 
+        const id = +new Date;
+        dispatch(addSubCategories({...values, id}));        
+     }
 
     const formik = useFormik({
         initialValues: {
@@ -42,8 +95,10 @@ function SubCategory(props) {
         },
         validationSchema: SubCategorySchema,
         onSubmit: (values, {resetForm}) => {
-            alert(JSON.stringify(values, null, 2));
+            // alert(JSON.stringify(values, null, 2));
+            AddSubCategory(values);
             resetForm();
+            handleClose();
         },
     });
 
@@ -123,13 +178,26 @@ function SubCategory(props) {
                                 helperText={errors.description && touched.description ? errors.description : ''}
                                 onBlur={handleBlur}
                             />
+                            <DialogActions>
+                                <Button onClick={handleClose}>Cancel</Button>
+                                <Button type="submit">Submit</Button>
+                            </DialogActions>
                         </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleClose}>Cancel</Button>
-                            <Button type="submit">Submit</Button>
-                        </DialogActions>
+                        
                     </form>
                 </Dialog>
+            </Box>
+            <Box>
+                <Paper sx={{ height: 400, width: '100%' }}>
+                    <DataGrid
+                        rows={subCategory.subcategories}
+                        columns={columns}
+                        initialState={{ pagination: { paginationModel } }}
+                        pageSizeOptions={[5, 10]}
+                        checkboxSelection
+                        sx={{ border: 0 }}
+                    />
+                </Paper>
             </Box>
         </Box>
     );
