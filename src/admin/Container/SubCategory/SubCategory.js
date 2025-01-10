@@ -15,15 +15,16 @@ import Select from '@mui/material/Select';
 import { number, object, string } from 'yup';
 import { useFormik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
-import { addSubCategories, getSubCategories } from '../../../redux/reducer/slice/subcategory.slice';
+import { addSubCategories, deleteCategories, getSubCategories, updateCategories } from '../../../redux/reducer/slice/subcategory.slice';
 
 function SubCategory(props) {
     const dispatch = useDispatch();
     const [open, setOpen] = React.useState(false);
+    const [isUpdate, setIsUpdate] = React.useState(false);
     const [categoryList, setCategoryList] = React.useState([]);
 
-    const subCategory = useSelector(state => state.subcategory);  
-    
+    const subCategory = useSelector(state => state.subcategory);
+
     console.log("SubCategory", subCategory);
 
     const getCategoryList = () => {
@@ -33,32 +34,39 @@ function SubCategory(props) {
         }
     }
 
-    const handleDelete = (id) => {}
+    const handleDelete = (id) => { 
+        console.log("id",id)
+        dispatch(deleteCategories(id))
+    }
 
-    const handleEdit = (data) => {}
+    const handleEdit = (data) => { 
+        handleClickOpen()
+        setValues(data)
+        setIsUpdate(true)
+     }
 
     const columns = [
-        { 
-            field: 'category', 
-            headerName: 'Category', 
+        {
+            field: 'category',
+            headerName: 'Category',
             width: 130,
-            valueGetter: (value) => {                   
-                return categoryList.find(item => item.id === value)?.name;                
-            } 
+            valueGetter: (value) => {
+                return categoryList.find(item => item.id === value)?.name;
+            }
         },
-        { field: 'name', headerName: 'Name', width: 130 },
-        { field: 'description', headerName: 'Description', width: 130 },
+        { field: 'name', headerName: 'Name', width: 200 },
+        { field: 'description', headerName: 'Description', width: 230 },
         {
             field: 'action',
             headerName: 'Action',
             width: 200,
             renderCell: (params) => (
                 <strong>
-                    <IconButton aria-label="delete" onClick={() => handleDelete(params.row.id)}>
-                        <GridDeleteIcon />
-                    </IconButton>
                     <IconButton aria-label="edit" onClick={() => handleEdit(params.row)}>
                         <EditIcon />
+                    </IconButton>
+                    <IconButton aria-label="delete" onClick={() => handleDelete(params.row.id)}>
+                        <GridDeleteIcon />
                     </IconButton>
                 </strong>
             ),
@@ -72,9 +80,9 @@ function SubCategory(props) {
     }
 
     React.useEffect(() => {
-        getCategoryList();     
-        getSubCategoryList();   
-    },[]);
+        getCategoryList();
+        getSubCategoryList();
+    }, []);
 
     const SubCategorySchema = object({
         category: number().required(),
@@ -82,10 +90,15 @@ function SubCategory(props) {
         description: string().required()
     });
 
-    const AddSubCategory = (values) => { 
+    const AddSubCategory = (values) => {
         const id = +new Date;
-        dispatch(addSubCategories({...values, id}));        
-     }
+        dispatch(addSubCategories({ ...values, id }));
+    }
+
+    const UpdateSubCategory = (values) => {
+        console.log( "update" ,values)
+        dispatch(updateCategories(values))
+    }
 
     const formik = useFormik({
         initialValues: {
@@ -94,22 +107,28 @@ function SubCategory(props) {
             description: ''
         },
         validationSchema: SubCategorySchema,
-        onSubmit: (values, {resetForm}) => {
+        onSubmit: (values, { resetForm }) => {
             // alert(JSON.stringify(values, null, 2));
-            AddSubCategory(values);
+            if(isUpdate){
+                UpdateSubCategory(values)
+            } else {
+                AddSubCategory(values);
+            }
             resetForm();
             handleClose();
         },
     });
 
-    const { handleSubmit, handleChange, handleBlur, values, errors, touched, setValues, resetForm } = formik;    
-  
+    const { handleSubmit, handleChange, handleBlur, values, errors, touched, setValues, resetForm } = formik;
+
     const handleClickOpen = () => {
         setOpen(true);
     };
 
     const handleClose = () => {
         setOpen(false);
+        setIsUpdate(false)
+        resetForm()
     };
     return (
         <Box>
@@ -127,28 +146,28 @@ function SubCategory(props) {
                         <DialogContent>
                             <InputLabel id="demo-simple-select-standard-label">category</InputLabel>
                             <FormControl fullWidth error={errors.category && touched.category ? errors.category : ''}>
-                            <Select
-                                labelId="demo-simple-select-standard-label"
-                                id="demo-simple-select-standard"
-                                value={values.category}
-                                onChange={handleChange}
-                                label="Age"
-                                fullWidth
-                                variant='standard'                                
-                                error={errors.category && touched.category}                                
-                                onBlur={handleBlur}
-                                name="category"
-                            >
-                                <MenuItem value="0">
-                                    <em>None</em>
-                                </MenuItem>
-                                {
-                                    categoryList.map((item, index) => {
-                                        return <MenuItem key={index} value={item.id}>{item.name}</MenuItem>
-                                    })
-                                }
-                            </Select>
-                            <FormHelperText>{errors.category && touched.category ? errors.category : ''}</FormHelperText>                            
+                                <Select
+                                    labelId="demo-simple-select-standard-label"
+                                    id="demo-simple-select-standard"
+                                    value={values.category}
+                                    onChange={handleChange}
+                                    label="Age"
+                                    fullWidth
+                                    variant='standard'
+                                    error={errors.category && touched.category}
+                                    onBlur={handleBlur}
+                                    name="category"
+                                >
+                                    <MenuItem value="0">
+                                        <em>None</em>
+                                    </MenuItem>
+                                    {
+                                        categoryList.map((item, index) => {
+                                            return <MenuItem key={index} value={item.id}>{item.name}</MenuItem>
+                                        })
+                                    }
+                                </Select>
+                                <FormHelperText>{errors.category && touched.category ? errors.category : ''}</FormHelperText>
                             </FormControl>
                             <TextField
                                 margin="dense"
@@ -180,10 +199,10 @@ function SubCategory(props) {
                             />
                             <DialogActions>
                                 <Button onClick={handleClose}>Cancel</Button>
-                                <Button type="submit">Submit</Button>
+                                <Button type="submit">{ isUpdate ? "Update" : "Submit"}</Button>
                             </DialogActions>
                         </DialogContent>
-                        
+
                     </form>
                 </Dialog>
             </Box>
