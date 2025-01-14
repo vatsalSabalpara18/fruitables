@@ -49,8 +49,7 @@ export const getSubCategories = createAsyncThunk(
     'subCategory/getSubCategories',
     async () => {
         try {
-            const response = await axios.get('http://localhost:5000/subcategory')
-            console.log(response.data)
+            const response = await axios.get('http://localhost:5000/subcategory')            
             return response.data
         } catch (error) {
             console.error(error)
@@ -64,21 +63,33 @@ export const addSubCategories = createAsyncThunk(
         try {
             const response = await axios.post("http://localhost:5000/subcategory", data)
             console.log(response.data);
+            return response.data
         } catch (error) {
             console.error(error)
         }
     }
 )
 export const deleteCategories = createAsyncThunk(
+    "subCategory/deleteCategories",
+    async (id) => {
+        try {
+            const response = await axios.delete('http://localhost:5000/subcategory/' + id)
+            console.log(response.data)
+            return id
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
 )
 export const updateCategories = createAsyncThunk(
     "subCategory/updateCategories",
     async (data) => {
-        try {            
+        try {       
+            console.log("data", data)     
             const response = await axios.put(`http://localhost:5000/subcategory/${data?.id}`, data)
             console.log(response.data)
-            // return response.data
+            return response.data
         } catch (error) {
             console.error(error)
         }
@@ -99,6 +110,9 @@ const subCategorySlice = createSlice({
         builder.addCase(updateCategories.fulfilled, (state, action) => {
             state.subCategoryData = state.subCategoryData.map((v) => v.id === action.payload.id ? action.payload : v);
         })
+        builder.addCase(deleteCategories.fulfilled, (state, action) => {
+            state.subCategoryData = state.subCategoryData.filter((v) => v.id !== action.payload);
+        }) 
     }
 })
 

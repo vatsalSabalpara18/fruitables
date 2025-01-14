@@ -25,8 +25,6 @@ function SubCategory(props) {
 
     const subCategory = useSelector(state => state.subcategory);
 
-    console.log("SubCategory", subCategory);
-
     const getCategoryList = () => {
         const localCategoryData = JSON.parse(localStorage.getItem('category'));
         if (localCategoryData) {
@@ -86,17 +84,17 @@ function SubCategory(props) {
     }, []);
 
     const SubCategorySchema = object({
-        category: number().required(),
+        category_id: number().required(),
         name: string().required(),
         description: string().required()
     });
 
     const AddSubCategory = (values) => {
-        const id = +new Date;
-        dispatch(addSubCategories({ ...values, id }));
+        // const id = +new Date;
+        dispatch(addSubCategories(values));
     }
 
-    const UpdateSubCategory = (values) => {        
+    const UpdateSubCategory = (values) => {              
         dispatch(updateCategories(values))
     }
 
@@ -109,6 +107,7 @@ function SubCategory(props) {
         validationSchema: SubCategorySchema,
         onSubmit: (values, { resetForm }) => {
             // alert(JSON.stringify(values, null, 2));
+            console.log(values, "from values")
             if(isUpdate){
                 UpdateSubCategory(values)
             } else {
