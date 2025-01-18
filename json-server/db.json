@@ -36,5 +36,21 @@
       "name": "new oko oko",
       "description": "kokokokokokoo"
     }
+  ],
+  "users": [
+    {
+      "id": "e710",
+      "name": "userOne",
+      "age": 23,
+      "address": "address u know",
+      "dob": "2002-11-23",
+      "profile": "budgetIcon.jpg",
+      "country": "USA",
+      "gender": "male",
+      "hobby": [
+        "cricket",
+        "chess"
+      ]
+    }
   ]
 }

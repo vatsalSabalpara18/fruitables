@@ -10,6 +10,7 @@ import Home from "../container/Home/Home";
 import Shop from "../container/Shop/Shop";
 import ShopDetails from "../container/ShopDetails/ShopDetails";
 import Testimonial from "../container/Testimonial/Testimonial";
+import UserRegisterPage from '../container/UserRegisterPage/UserRegisterPage';
 
 function UserRoutes(props) {
     return (
@@ -25,6 +26,7 @@ function UserRoutes(props) {
                 <Route path="/chackout" element={<ChackOut />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/testimonial" element={<Testimonial />} />
+                <Route path="/register" element={<UserRegisterPage />} />
             </Routes>           
             <Footer />
         </>
