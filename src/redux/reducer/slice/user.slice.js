@@ -42,6 +42,17 @@ export const deleteUser = createAsyncThunk('User/deleteUser',
     }
 )
 
+export const updateUser = createAsyncThunk('User/updateUser',
+    async (data) => {
+        try {
+            const response = await axios.put("http://localhost:5000/users/" + data.id, data);
+            return response.data
+        } catch (error) {
+            console.error(error)
+        }
+    }
+)
+
 const userSlice = createSlice({
     name: 'User',
     initialState,
@@ -54,6 +65,9 @@ const userSlice = createSlice({
         })
         builder.addCase(deleteUser.fulfilled, (state, action) => {
             state.user =state.user.filter((v) => v.id !== action.payload);
+        })
+        builder.addCase(updateUser.fulfilled, (state, action) => {
+            state.user = state.user.map((v) => v.id === action.payload.id ? action.payload : v);
         })
     }
 })

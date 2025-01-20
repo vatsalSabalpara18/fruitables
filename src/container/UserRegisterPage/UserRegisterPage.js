@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { array, date, mixed, number, object, string } from "yup";
 import { useFormik } from "formik";
 import {
@@ -20,18 +20,24 @@ import {
   IconButton,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser, deleteUser, getUsers } from "../../redux/reducer/slice/user.slice";
+import {
+  addUser,
+  deleteUser,
+  getUsers,
+  updateUser,
+} from "../../redux/reducer/slice/user.slice";
 import { DataGrid, GridDeleteIcon } from "@mui/x-data-grid";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 
 function UserRegisterPage() {
   const dispatch = useDispatch();
-  
+  const [isUpdate, setIsUpdate] = useState(false);
+
   useEffect(() => {
     dispatch(getUsers());
-  }, [])
+  }, []);
 
-  const user = useSelector(state => state.user)
+  const user = useSelector((state) => state.user);
 
   const contactSchema = object().shape({
     name: string()
@@ -49,16 +55,23 @@ function UserRegisterPage() {
     profile: mixed()
       .required("You need provide the file.")
       .test("profile", "The file is too large", (value) => {
-        console.log("value", value);
-        return value && value.size <= 2000000;
+        if (typeof value === "string") {
+          return true
+        } else if (typeof value === "object") {
+          return value && value.size <= 2000000;
+        }
       })
       .test(
         "profile",
         "only the following formats are allowed: jpeg, jpg & png",
         (value) => {
-          return (
-            value && (value.type === "image/jpeg" || value.type === "image/png")
-          );
+          if (typeof value === "string") {
+            return true
+          } else if (typeof value === "object") {
+            return (
+              value && (value.type === "image/jpeg" || value.type === "image/png")
+            );
+          }
         }
       ),
     country: string().required().min(2),
@@ -79,8 +92,12 @@ function UserRegisterPage() {
     },
     validationSchema: contactSchema,
     onSubmit: (values, { resetForm }) => {
-      const modifiedValues = { ...values, profile: values?.profile?.name }
-      dispatch(addUser(modifiedValues));
+      const modifiedValues = { ...values, profile: values?.profile?.name ? values?.profile?.name : values?.profile };
+      if (isUpdate) {
+        dispatch(updateUser(modifiedValues));
+      } else {
+        dispatch(addUser(modifiedValues));
+      }
       // alert(JSON.stringify(values, null, 2));
       // addContact(values);
       resetForm();
@@ -101,24 +118,37 @@ function UserRegisterPage() {
   const paginationModel = { page: 0, pageSize: 5 };
 
   const columns = [
-    { field: 'profile', headerName: 'Profile Picture', },
-    { field: 'name', headerName: 'Name', },
-    { field: 'age', headerName: 'Age', },
-    { field: 'address', headerName: 'Address', width: 350},
-    { field: 'dob', headerName: 'Date of Birth', },
-    { field: 'country', headerName: 'Country', },
-    { field: 'gender', headerName: 'Gender', },
-    { field: 'hobby', headerName: 'Hobbies', },
     {
-      field: 'action',
-      headerName: 'Action',
+      field: "profile",
+      headerName: "Profile Picture",
+      renderCell: (params) => (
+        <img
+          src={`img/${params?.row?.profile || "avatar.jpg"}`}
+          height={"45"}
+          width={"50"}
+        />
+      ),
+    },
+    { field: "name", headerName: "Name" },
+    { field: "age", headerName: "Age" },
+    { field: "address", headerName: "Address", width: 350 },
+    { field: "dob", headerName: "Date of Birth" },
+    { field: "country", headerName: "Country" },
+    { field: "gender", headerName: "Gender" },
+    { field: "hobby", headerName: "Hobbies" },
+    {
+      field: "action",
+      headerName: "Action",
       width: 200,
       renderCell: (params) => (
         <strong>
-          <IconButton aria-label="delete" onClick={() => handleDelete(params.row.id)}>
+          <IconButton
+            aria-label="delete"
+            onClick={() => handleDelete(params.row.id)}
+          >
             <GridDeleteIcon />
           </IconButton>
-          <IconButton aria-label="edit" onClick={() => console.log(params.row)}>
+          <IconButton aria-label="edit" onClick={() => handleEdit(params.row)}>
             <EditIcon />
           </IconButton>
         </strong>
@@ -128,7 +158,12 @@ function UserRegisterPage() {
 
   const handleDelete = (id) => {
     dispatch(deleteUser(id));
-  }
+  };
+
+  const handleEdit = (data) => {
+    setValues(data);
+    setIsUpdate(true);
+  };
 
   return (
     <>
@@ -216,6 +251,16 @@ function UserRegisterPage() {
                     onChange={(e) =>
                       setFieldValue("profile", e.target.files[0])
                     }
+                  />
+                  <img
+                    src={
+                      typeof values?.profile === "string"
+                        ? `img/${values?.profile || "avatar.jpg"}`
+                        : values.profile !== null ? URL.createObjectURL(values.profile) : 'img/avatar.jpg'
+                      // :  URL.createObjectURL(values.profile)
+                    }
+                    height={"100"}
+                    width={"100"}
                   />
                   {errors.profile && touched.profile ? (
                     <p style={{ color: "red", fontSize: "small" }}>
@@ -334,12 +379,12 @@ function UserRegisterPage() {
                   variant="outlined"
                   type="submit"
                 >
-                  Submit
+                  {isUpdate ? "Update" : "Submit"}
                 </Button>
-              </form>              
+              </form>
             </div>
             <Box sx={{ mt: 5 }}>
-              <Paper sx={{ height: 400, width: '100%' }}>
+              <Paper sx={{ height: 400, width: "100%" }}>
                 <DataGrid
                   rows={user?.user}
                   columns={columns}
