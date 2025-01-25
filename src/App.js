@@ -1,27 +1,22 @@
-import Footer from "./component/Footer/Footer";
-import Header from "./component/Header/Header";
-import Page404 from "./container/404Page/Page404";
-import Cart from "./container/Cart/Cart";
-import ChackOut from "./container/ChackOut.js/ChackOut";
-import Contact from "./container/Contact/Contact";
-import Home from "./container/Home/Home";
-import Shop from "./container/Shop/Shop";
-import ShopDetails from "./container/ShopDetails/ShopDetails";
-import Testimonial from "./container/Testimonial/Testimonial";
+import { Route, Routes } from "react-router-dom";
+import UserRoutes from "./routes/UserRoutes";
+import PrivateRoutes from "./routes/PrivateRoutes";
+import AdminRoutes from "./routes/AdminRoutes";
+import { Provider } from "react-redux";
+import { createStore } from "./redux/store";
 
 function App() {
+  const store = createStore();
   return (
     <>
-      <Header />
-      {/* <Home /> */}
-      {/* <Shop /> */}
-      {/* <ShopDetails /> */}
-      {/* <Page404 /> */}
-      {/* <Cart /> */}
-      {/* <ChackOut /> */}
-      {/* <Contact /> */}
-      <Testimonial />
-      <Footer />
+    <Provider store={store}>
+      <Routes>
+        <Route path="/*" element={<UserRoutes />} />
+        <Route element={<PrivateRoutes />} >
+          <Route path="/admin/*" element={<AdminRoutes />} />
+        </Route>
+      </Routes>
+    </Provider>
     </>
   );
 }

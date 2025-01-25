@@ -1,6 +1,97 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { object, string } from 'yup';
+import { useFormik } from 'formik';
+import { TextField, Button, Box, Paper, IconButton } from '@mui/material';
+import { DataGrid, GridDeleteIcon } from '@mui/x-data-grid';
+import EditIcon from '@mui/icons-material/Edit';
 
 function Contact(props) {
+    const [contactTable, setContactTable] = React.useState([]);
+    const [isEdit, setIsEdit] = React.useState(null);
+
+    const getContactData = () => {
+        const localStorageContact = JSON.parse(localStorage.getItem('contact'));
+        if (localStorageContact) {
+            setContactTable(localStorageContact);
+        }
+    }
+
+    useEffect(() => {
+        getContactData();
+    },[]);
+    
+    const contactSchema = object({
+        name: string().required(),
+        email: string().email().required(),
+        message: string().required(),
+    })
+
+    const paginationModel = { page: 0, pageSize: 5 };
+
+    const handleDelete = (id) => {
+        const localData = JSON.parse(localStorage.getItem('contact'));
+        const newData = localData.filter(data => data.id !== id);
+        localStorage.setItem('contact', JSON.stringify(newData));
+        setContactTable(newData);
+    }
+
+    const handleEdit = (data) => {
+        console.log("handleEdit", data);
+        const localData = JSON.parse(localStorage.getItem('contact'));
+        const index = localData.findIndex((item) => item.id === data.id);
+        console.log("index", index);        
+        setIsEdit(index);
+        setValues(data);
+    }
+
+    const columns = [
+        { field: 'name', headerName: 'Name', width: 250 },
+        { field: 'email', headerName: 'Email', width: 350 },
+        { field: 'message', headerName: 'Message', width: 350 },
+        {
+            field: 'action',
+            headerName: 'Action',
+            width: 200,
+            renderCell: (params) => (
+                <strong>
+                    <IconButton aria-label="delete" onClick={() => handleDelete(params.row.id)}>
+                        <GridDeleteIcon />
+                    </IconButton>
+                    <IconButton aria-label="edit" onClick={() => handleEdit(params.row)}>
+                        <EditIcon />
+                    </IconButton>
+                </strong>
+            ),
+        },
+    ];
+
+    const addContact = (data) => {
+        const contactData = JSON.parse(localStorage.getItem('contact'));
+        if (contactData) {
+            contactData.push({...data, id: +new Date()});
+            localStorage.setItem('contact', JSON.stringify(contactData));
+            setContactTable(contactData);
+        } else {
+            localStorage.setItem('contact', JSON.stringify([{...data, id: +new Date()}]));
+            setContactTable([{...data, id: +new Date()}]);
+        }
+    }
+
+    const formik = useFormik({
+        initialValues: {
+            name: '',
+            email: '',
+            message: '',
+        },
+        validationSchema: contactSchema,
+        onSubmit: (values, { resetForm }) => {
+            // alert(JSON.stringify(values, null, 2));
+            addContact(values);
+            resetForm();
+        },
+    });
+
+    const { handleSubmit, handleChange, handleBlur, values, errors, touched, setValues } = formik;    
     return (
         <>
 
@@ -31,11 +122,55 @@ function Contact(props) {
                                 </div>
                             </div>
                             <div className="col-lg-7">
-                                <form action className>
-                                    <input type="text" className="w-100 form-control border-0 py-3 mb-4" placeholder="Your Name" />
-                                    <input type="email" className="w-100 form-control border-0 py-3 mb-4" placeholder="Enter Your Email" />
-                                    <textarea className="w-100 form-control border-0 mb-4" rows={5} cols={10} placeholder="Your Message" defaultValue={""} />
-                                    <button className="w-100 btn form-control border-secondary py-3 bg-white text-primary " type="submit">Submit</button>
+                                <form onSubmit={handleSubmit} >
+                                    <TextField
+                                        type="text"
+                                        variant="standard"
+                                        className="w-100 py-3 mb-4"
+                                        placeholder="Your Name"
+                                        name="name"
+                                        label="Name"
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        value={values.name}
+                                        error={errors.name && touched.name}
+                                        helperText={errors.name && touched.name ? errors.name : null}
+                                    />
+                                    <TextField
+                                        type="email"
+                                        variant="standard"
+                                        className="w-100 py-3 mb-4"
+                                        placeholder="Enter Your Email"
+                                        name="email"
+                                        label="Email"
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        value={values.email}
+                                        error={errors.email && touched.email}
+                                        helperText={errors.email && touched.email ? errors.email : null}
+                                    />
+                                    <TextField
+                                        id="standard-multiline-static"
+                                        label="Message"
+                                        multiline
+                                        rows={3}
+                                        variant="standard"
+                                        className="w-100 py-3 mb-4"
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        value={values.message}
+                                        name="message"
+                                        error={errors.message && touched.message}
+                                        helperText={errors.message && touched.message ? errors.message : null}
+                                    />                                    
+                                    <Button
+                                        className="w-100 btn py-3 bg-white text-primary rounded-10"
+                                        variant="outlined"
+                                        type="submit">
+                                        {
+                                            isEdit || isEdit === 0 ? "Update" : "Submit"
+                                        }
+                                    </Button>
                                 </form>
                             </div>
                             <div className="col-lg-5">
@@ -64,6 +199,18 @@ function Contact(props) {
                         </div>
                     </div>
                 </div>
+                <Box sx={{ mt: 5 }}>
+                    <Paper sx={{ height: 400, width: '100%' }}>
+                        <DataGrid
+                            rows={contactTable}
+                            columns={columns}
+                            initialState={{ pagination: { paginationModel } }}
+                            pageSizeOptions={[5, 10]}
+                            checkboxSelection
+                            sx={{ border: 0 }}
+                        />
+                    </Paper>
+                </Box>
             </div>
             {/*Contact End*/}
 
