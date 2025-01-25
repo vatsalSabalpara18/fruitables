@@ -25,8 +25,6 @@ function SubCategory(props) {
 
     const subCategory = useSelector(state => state.subcategory);
 
-    console.log("SubCategory", subCategory);
-
     const getCategoryList = () => {
         const localCategoryData = JSON.parse(localStorage.getItem('category'));
         if (localCategoryData) {
@@ -41,16 +39,17 @@ function SubCategory(props) {
 
     const handleEdit = (data) => { 
         handleClickOpen()
+        console.log(data);
         setValues(data)
         setIsUpdate(true)
      }
 
     const columns = [
         {
-            field: 'category',
+            field: 'category_id',
             headerName: 'Category',
             width: 130,
-            valueGetter: (value) => {
+            valueGetter: (value) => {                
                 return categoryList.find(item => item.id === value)?.name;
             }
         },
@@ -85,30 +84,30 @@ function SubCategory(props) {
     }, []);
 
     const SubCategorySchema = object({
-        category: number().required(),
+        category_id: number().required(),
         name: string().required(),
         description: string().required()
     });
 
     const AddSubCategory = (values) => {
-        const id = +new Date;
-        dispatch(addSubCategories({ ...values, id }));
+        // const id = +new Date;
+        dispatch(addSubCategories(values));
     }
 
-    const UpdateSubCategory = (values) => {
-        console.log( "update" ,values)
+    const UpdateSubCategory = (values) => {              
         dispatch(updateCategories(values))
     }
 
     const formik = useFormik({
         initialValues: {
-            category: 0,
+            category_id: 0,
             name: '',
             description: ''
         },
         validationSchema: SubCategorySchema,
         onSubmit: (values, { resetForm }) => {
             // alert(JSON.stringify(values, null, 2));
+            console.log(values, "from values")
             if(isUpdate){
                 UpdateSubCategory(values)
             } else {
@@ -145,18 +144,18 @@ function SubCategory(props) {
                         <DialogTitle>Sub Category</DialogTitle>
                         <DialogContent>
                             <InputLabel id="demo-simple-select-standard-label">category</InputLabel>
-                            <FormControl fullWidth error={errors.category && touched.category ? errors.category : ''}>
+                            <FormControl fullWidth error={errors.category_id && touched.category_id ? errors.category_id : ''}>
                                 <Select
                                     labelId="demo-simple-select-standard-label"
                                     id="demo-simple-select-standard"
-                                    value={values.category}
+                                    value={values.category_id}
                                     onChange={handleChange}
                                     label="Age"
                                     fullWidth
                                     variant='standard'
-                                    error={errors.category && touched.category}
+                                    error={errors.category_id && touched.category_id}
                                     onBlur={handleBlur}
-                                    name="category"
+                                    name="category_id"
                                 >
                                     <MenuItem value="0">
                                         <em>None</em>
@@ -209,7 +208,7 @@ function SubCategory(props) {
             <Box>
                 <Paper sx={{ height: 400, width: '100%' }}>
                     <DataGrid
-                        rows={subCategory.subcategories}
+                        rows={subCategory.subCategoryData}
                         columns={columns}
                         initialState={{ pagination: { paginationModel } }}
                         pageSizeOptions={[5, 10]}
