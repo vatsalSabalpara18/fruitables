@@ -23,6 +23,78 @@
       "category_id": 1735548932028,
       "name": "new  okokok",
       "description": "okokok"
+    },
+    {
+      "id": "ea68",
+      "category_id": 1735699054658,
+      "name": "baucbiu usbvui",
+      "description": "nuisbv nsuvus"
+    },
+    {
+      "id": "12b3",
+      "category_id": 1735706070845,
+      "name": "new oko oko",
+      "description": "kokokokokokoo"
+    }
+  ],
+  "users": [
+    {
+      "id": "e710",
+      "name": "userOne",
+      "age": 23,
+      "address": "address u know",
+      "dob": "2002-11-23",
+      "profile": "budgetIcon.jpg",
+      "country": "USA",
+      "gender": "male",
+      "hobby": [
+        "cricket",
+        "chess"
+      ]
+    },
+    {
+      "id": "ab9b",
+      "name": "Hunter Hart",
+      "age": 8,
+      "address": "Eum exercitation dol",
+      "dob": "2015-12-24",
+      "profile": "QveWPT.png",
+      "country": "USA",
+      "gender": "female",
+      "hobby": [
+        "cricket",
+        "music",
+        "chess"
+      ]
+    },
+    {
+      "id": "48bf",
+      "name": "Holly Benjamin nn",
+      "age": 34,
+      "address": "Et ducimus quae est est",
+      "dob": "2019-08-06",
+      "country": "USA",
+      "gender": "male",
+      "hobby": [
+        "music",
+        "vollyball",
+        "chess"
+      ],
+      "profile": "testimonial-1.jpg"
+    },
+    {
+      "id": "8302",
+      "name": "Quyn Mclean",
+      "age": 45,
+      "address": "Dolor ut eaque ut s",
+      "dob": "1992-11-23",
+      "profile": "featur-2.jpg",
+      "country": "USA",
+      "gender": "male",
+      "hobby": [
+        "chess",
+        "vollyball"
+      ]
     }
   ]
 }
