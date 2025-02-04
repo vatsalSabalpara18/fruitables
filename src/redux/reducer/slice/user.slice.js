@@ -10,8 +10,7 @@ const initialState = {
 export const getUsers = createAsyncThunk('User/getUsers',
     async () => {
         try {
-            const response = await axios.get("http://localhost:5000/users");
-            console.log(response.data)      
+            const response = await axios.get("http://localhost:5000/users");                
             return response.data
         } catch (error) {
             console.error(error)
@@ -22,8 +21,7 @@ export const getUsers = createAsyncThunk('User/getUsers',
 export const addUser = createAsyncThunk('User/addUser',
     async (data) => {
         try {
-            const response = await axios.post("http://localhost:5000/users", data);
-            console.log(response.data)
+            const response = await axios.post("http://localhost:5000/users", data);            
             return response.data
         } catch (error) {
             console.error(error)

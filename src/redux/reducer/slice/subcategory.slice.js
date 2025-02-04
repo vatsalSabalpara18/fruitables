@@ -42,6 +42,7 @@ import { API_BASE_URL } from "../../../utills/baseURL"
 const initialState = {
     isLoading: false,
     subCategoryData: [],
+    subCatByCat: [],
     error: null
 }
 
@@ -58,6 +59,19 @@ export const getSubCategories = createAsyncThunk(
     }
 )
 
+export const getSubCategoryByCategory = createAsyncThunk(
+    'subCategory/getSubCategoryByCategory',
+    async (category) => {
+        try {
+            if(!category) return;
+            const response = await axios.get(API_BASE_URL + "sub-categories/get-subcategories/" + category);
+            return response.data?.data
+        } catch (error) {
+            console.error(error);
+        }
+    }
+)
+
 export const addSubCategories = createAsyncThunk(
     'subCategory/addSubCategories',
     async (data) => {
@@ -66,8 +80,7 @@ export const addSubCategories = createAsyncThunk(
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
-            })
-            console.log(response.data?.data);
+            })            
             return response.data?.data
         } catch (error) {
             console.error(error)
@@ -78,8 +91,7 @@ export const deleteCategories = createAsyncThunk(
     "subCategory/deleteCategories",
     async (id) => {
         try {
-            const response = await axios.delete(API_BASE_URL + 'sub-categories/delete-subcategory/' + id)
-            console.log(response.data)
+            const response = await axios.delete(API_BASE_URL + 'sub-categories/delete-subcategory/' + id)            
             return response.data?.data;
         } catch (error) {
             console.error(error)
@@ -120,6 +132,9 @@ const subCategorySlice = createSlice({
         builder.addCase(deleteCategories.fulfilled, (state, action) => {
             state.subCategoryData = state.subCategoryData.filter((v) => v._id !== action.payload._id);
         }) 
+        builder.addCase(getSubCategoryByCategory.fulfilled, (state, action) => {
+            state.subCatByCat = action.payload;
+        })
     }
 })
 

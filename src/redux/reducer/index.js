@@ -3,6 +3,7 @@ import { counterReducer } from "./counter.reducer";
 import subcategorySlice from "./slice/subcategory.slice";
 import userReducer from "./slice/user.slice";
 import categoryReducer from "./slice/category.slice";
+import productReducer from './slice/product.slice';
 
 // export const intialState = {
 //     value: 0
@@ -17,5 +18,6 @@ export const rootReducer = combineReducers({
     counter: counterReducer,
     subcategory: subcategorySlice,
     user: userReducer,
-    category: categoryReducer
+    category: categoryReducer,
+    product: productReducer
 });

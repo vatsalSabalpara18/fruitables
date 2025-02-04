@@ -32,8 +32,7 @@ function SubCategory(props) {
         dispatch(getCategories());
     }
 
-    const handleDelete = (id) => {
-        console.log("id", id)
+    const handleDelete = (id) => {        
         dispatch(deleteCategories(id))
     }
 
@@ -142,9 +141,7 @@ function SubCategory(props) {
             sub_cat_img: ''
         },
         validationSchema: SubCategorySchema,
-        onSubmit: (values, { resetForm }) => {
-            // alert(JSON.stringify(values, null, 2));
-            console.log(values, "from values");      
+        onSubmit: (values, { resetForm }) => {              
             if (isUpdate) {
                 UpdateSubCategory(values)
             } else {

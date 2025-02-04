@@ -130,6 +130,11 @@ export default function Layout({ children }) {
             label: 'Counter',
             icon: <CountertopsIcon />,
             to: '/admin/counter'
+        },
+        {
+            label: 'Product',
+            icon: <AnalyticsIcon />,
+            to: '/admin/product'
         }
     ];
 
