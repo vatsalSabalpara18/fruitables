@@ -59,8 +59,8 @@ function Category(props) {
             )
             
         },
-        { field: 'name', headerName: 'Name', width: 350 },
-        { field: 'description', headerName: 'Description', width: 350 },
+        { field: 'name', headerName: 'Name', width: 150 },
+        { field: 'description', headerName: 'Description', width: 450 },
         {
             field: 'action',
             headerName: 'Action',

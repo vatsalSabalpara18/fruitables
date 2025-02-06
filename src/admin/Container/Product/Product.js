@@ -13,6 +13,7 @@ import {
     MenuItem,
     FormHelperText,
     InputLabel,
+    DialogContentText,
 } from "@mui/material";
 import { DataGrid, GridDeleteIcon } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
@@ -21,8 +22,7 @@ import { object, string, mixed, number } from "yup";
 import { useFormik } from "formik";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { API_BASE_URL, IMAGE_URL } from "../../../utills/baseURL";
-import axios from "axios";
+import { IMAGE_URL } from "../../../utills/baseURL";
 import {
     addProduct,
     deleteProduct,
@@ -37,7 +37,8 @@ const paginationModel = { page: 0, pageSize: 5 };
 function Product(props) {
     const dispatch = useDispatch();
     const [open, setOpen] = React.useState(false);
-    const [subCategoryList, setSubCategoryList] = React.useState([]);
+    const [openDelete, setOpenDelete] = React.useState(false);
+    const [deleteId, setDeleteId] = React.useState(null);
     const product = useSelector((state) => state.product);
     const categoryList = useSelector((state) => state.category?.categories);
     const subCategoryDataList = useSelector(
@@ -45,6 +46,11 @@ function Product(props) {
     );
     const { subCatByCat } = useSelector((state) => state.subcategory);
     const [isUpdate, setIsUpdate] = React.useState(false);
+
+    const handleDeleteModel = (row_id) => {
+        setDeleteId(row_id);
+        setOpenDelete(!openDelete);
+    }
 
     const getProductData = () => {
         dispatch(getProducts());
@@ -185,7 +191,7 @@ function Product(props) {
                 <strong>
                     <IconButton
                         aria-label="delete"
-                        onClick={() => handleDelete(params.row?._id)}
+                        onClick={() => handleDeleteModel(params.row?._id)}
                     >
                         <GridDeleteIcon />
                     </IconButton>
@@ -388,6 +394,34 @@ function Product(props) {
                     />
                 </Paper>
             </Box>
+            <React.Fragment>                
+                <Dialog
+                    open={openDelete}
+                    onClose={() => handleDeleteModel(null)}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        Delete Product
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            Are you sure delete Product?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => handleDeleteModel(null)}>No</Button>
+                        <Button onClick={() => {
+                            if(deleteId) {
+                                handleDelete(deleteId);
+                            }
+                            handleDeleteModel(null);
+                        }} autoFocus>
+                            Yes
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </React.Fragment>
         </Box>
     );
 }
