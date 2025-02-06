@@ -2,16 +2,17 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCategories } from '../../redux/reducer/slice/category.slice';
 import { IMAGE_URL } from '../../utills/baseURL';
+import { Link } from 'react-router-dom';
 
 function Home(props) {
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(getCategories());
-    },[])
+    }, [])
     const category = useSelector(state => state.category?.categories)
     return (
         <>
-            <div>                
+            <div>
                 {/* Hero Start */}
                 <div className="container-fluid py-5 mb-5 hero-header">
                     <div className="container py-5">
@@ -147,23 +148,24 @@ function Home(props) {
                                             <div className="row g-4">
                                                 {
                                                     category?.map((cat_Item) => {
-                                                        console.log("category images", cat_Item?.cat_img);                                                 
                                                         return (
-                                                            <div className="col-md-6 col-lg-4 col-xl-3">
-                                                                <div className="rounded position-relative fruite-item">
-                                                                    <div className="fruite-img">
-                                                                        <img src={IMAGE_URL + cat_Item?.cat_img} style={{height: "160px"}} className="img-fluid w-100 rounded-top" alt={cat_Item?.name}/>
-                                                                    </div>
-                                                                    {/* <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{ top: 10, left: 10 }}>{cat_Item?.name}</div> */}
-                                                                    <div className="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                                        <h4>{cat_Item?.name}</h4>
-                                                                        <p>{cat_Item?.description?.slice(0, 70)}...</p>
-                                                                        <div className="d-flex justify-content-between flex-lg-wrap">
-                                                                            {/* <p className="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p> */}
-                                                                            {/* <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary"><i className="fa fa-shopping-bag me-2 text-primary" /> Add to cart</a> */}
+                                                            <div className="col-md-6 col-lg-4 col-xl-3" key={cat_Item?._id}>
+                                                                <Link to={`/subcategories/${cat_Item?._id}`}>
+                                                                    <div className="rounded position-relative fruite-item">
+                                                                        <div className="fruite-img">
+                                                                            <img src={IMAGE_URL + cat_Item?.cat_img} style={{ height: "160px" }} className="img-fluid w-100 rounded-top" alt={cat_Item?.name} />
+                                                                        </div>
+                                                                        {/* <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{ top: 10, left: 10 }}>{cat_Item?.name}</div> */}
+                                                                        <div className="p-4 border border-secondary border-top-0 rounded-bottom">
+                                                                            <h4>{cat_Item?.name}</h4>
+                                                                            <p>{cat_Item?.description?.slice(0, 70)}...</p>
+                                                                            <div className="d-flex justify-content-between flex-lg-wrap">
+                                                                                {/* <p className="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p> */}
+                                                                                {/* <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary"><i className="fa fa-shopping-bag me-2 text-primary" /> Add to cart</a> */}
+                                                                            </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
+                                                                </Link>
                                                             </div>
                                                         )
                                                     })
@@ -991,7 +993,7 @@ function Home(props) {
                         </div>
                     </div>
                 </div>
-                {/* Tastimonial End */}                
+                {/* Tastimonial End */}
             </div>
 
         </>
