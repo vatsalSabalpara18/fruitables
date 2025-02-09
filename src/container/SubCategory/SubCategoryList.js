@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { IMAGE_URL } from '../../utills/baseURL';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import { getSubCategoryByCategory } from '../../redux/reducer/slice/subcategory.slice';
 import { getCategories } from '../../redux/reducer/slice/category.slice';
 
@@ -16,7 +16,7 @@ function SubCategoryList() {
     useEffect(() => {
         dispatch(getCategories());
     }, [])
- 
+
     const subcategoryList = useSelector(state => state.subcategory?.subCatByCat);
     const categoryList = useSelector(state => state.category?.categories);
     return (
@@ -44,7 +44,7 @@ function SubCategoryList() {
                                         </a>
                                     </li>
                                     {
-                                        categoryList?.map((cat_Item, index) => {                                            
+                                        categoryList?.map((cat_Item, index) => {
                                             return (
                                                 <li className="nav-item" key={cat_Item?._id}>
                                                     <a className="d-flex m-2 py-2 bg-light rounded-pill" data-bs-toggle="pill" href={`#tab-1`} onClick={() => dispatch(getSubCategoryByCategory(cat_Item?._id))}>
@@ -83,28 +83,30 @@ function SubCategoryList() {
                                     <div className="col-lg-12">
                                         <div className="row g-4">
                                             {
-                                                subcategoryList?.map((subCat_Item) => {    
-                                                    const categoryName = categoryList?.find((cat_Item) => cat_Item?._id === subCat_Item?.category)?.name;                                                
+                                                subcategoryList?.map((subCat_Item) => {
+                                                    const categoryName = categoryList?.find((cat_Item) => cat_Item?._id === subCat_Item?.category)?.name;
                                                     return (
                                                         <div className="col-md-6 col-lg-4 col-xl-3" key={subCat_Item?._id}>
-                                                            <div className="rounded position-relative fruite-item">
-                                                                <div className="fruite-img">
-                                                                    <img src={IMAGE_URL + subCat_Item?.sub_cat_img} style={{ height: "160px" }} className="img-fluid w-100 rounded-top" alt={subCat_Item?.name} />
-                                                                </div>
-                                                                <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{ top: 10, left: 10 }}>{categoryName}</div>
-                                                                <div className="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                                    <h4>{subCat_Item?.name}</h4>
-                                                                    <p>{subCat_Item?.description?.slice(0, 70)}...</p>
-                                                                    <div className="d-flex justify-content-between flex-lg-wrap">
-                                                                        {/* <p className="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p> */}
-                                                                        {/* <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary"><i className="fa fa-shopping-bag me-2 text-primary" /> Add to cart</a> */}
+                                                            <NavLink to={`/shop/${subCat_Item?._id}`}>
+                                                                <div className="rounded position-relative fruite-item">
+                                                                    <div className="fruite-img">
+                                                                        <img src={IMAGE_URL + subCat_Item?.sub_cat_img} style={{ height: "160px" }} className="img-fluid w-100 rounded-top" alt={subCat_Item?.name} />
+                                                                    </div>
+                                                                    <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{ top: 10, left: 10 }}>{categoryName}</div>
+                                                                    <div className="p-4 border border-secondary border-top-0 rounded-bottom">
+                                                                        <h4>{subCat_Item?.name}</h4>
+                                                                        <p>{subCat_Item?.description?.slice(0, 70)}...</p>
+                                                                        <div className="d-flex justify-content-between flex-lg-wrap">
+                                                                            {/* <p className="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p> */}
+                                                                            {/* <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary"><i className="fa fa-shopping-bag me-2 text-primary" /> Add to cart</a> */}
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
+                                                            </NavLink>
                                                         </div>
                                                     )
                                                 })
-                                            }                                            
+                                            }
                                         </div>
                                     </div>
                                 </div>

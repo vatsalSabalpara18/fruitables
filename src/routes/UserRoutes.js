@@ -20,7 +20,7 @@ function UserRoutes(props) {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/shop" element={<Shop />} />
-                <Route path="/shop/:id" element={<ShopDetails />} />
+                <Route path="/shop/:id" element={<Shop />} />
                 <Route path="/shop_detail" element={<ShopDetails />} />
                 <Route path="/error" element={<Page404 />} />
                 <Route path="/cart" element={<Cart />} />
