@@ -7,6 +7,7 @@ import { getSubCategories } from "../../redux/reducer/slice/subcategory.slice";
 import { IMAGE_URL } from "../../utills/baseURL";
 import "../../assets/css/product.css";
 import { useDebouncedCallback } from "use-debounce";
+import { Slider } from "@mui/material";
 
 function Shop(props) {
     const { id } = useParams();
@@ -17,47 +18,85 @@ function Shop(props) {
     const subCategoryList = useSelector(
         (state) => state?.subcategory?.subCategoryData
     );
-
-    const [productData, setProductData] = useState([]);
     const [priceRange, setPriceRange] = useState(0);
     const [currentCategory, setCurrentCategory] = useState("");
+    const [selectedOption, setSelectedOption] = useState('Name(A-Z)');
+    const [searchQuery, setSearchQuery] = useState('');
     useEffect(() => {
         dispatch(getProducts());
         dispatch(getCategories());
         dispatch(getSubCategories());
     }, []);
 
-    useEffect(() => {
+    const handleProductDisplay = () => {
+        let finalProductList;
+        // subcategories        
         if (id) {
-            setProductData(
-                productList?.filter((item) => item?.sub_category === id),
-                productList
-            );
+            finalProductList = productList?.filter((item) => item?.sub_category === id);
         } else {
-            setProductData(productList);
+            finalProductList = [...productList];
         }
+        
+        // categories
+        if (currentCategory === "All Categories") {
+            finalProductList = [...productList];
+        } else if (currentCategory) {
+            finalProductList = productList?.filter((item) => item?.category === currentCategory)
+        }
+
+        //priceRange
+        if (priceRange > 0) {
+            finalProductList = finalProductList?.filter((item) => item?.price <= priceRange)
+        }
+
+        // sorting
+        if (selectedOption === "Name(A-Z)") {
+            finalProductList?.sort((a, b) => a?.name?.localeCompare(b?.name));
+        } else if (selectedOption === "Name(Z-A)") {
+            finalProductList?.sort((a, b) => b?.name.localeCompare(a?.name));
+        } else if (selectedOption === "PLH") {
+            finalProductList?.sort((a, b) => a?.price - b?.price);
+        } else if (selectedOption === "PHL") {
+            finalProductList?.sort((a, b) => b?.price - a?.price);
+        }
+
+        // searching
+        if (searchQuery) {
+            finalProductList = finalProductList?.filter(
+                (item) =>
+                    item?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    item?.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    item?.price.toString().includes(searchQuery)
+            );
+        }
+
+        return finalProductList;
+    }
+
+    const productData = handleProductDisplay();
+
+    useEffect(() => {
+        // if (id) {
+        //     setProductData(
+        //         productList?.filter((item) => item?.sub_category === id)              
+        //     );
+        // } else {
+        //     setProductData(productList);
+        // }
+        // handleProductDisplay()
     }, [id, productList?.length]);
 
-    // useEffect(() => {
-    //     if(priceRange){
-            
-    //     }
-    // }, [priceRange])
-
     const handlePriceChange = useDebouncedCallback((value) => {
-        setPriceRange(value)        
-        setProductData(
-            (prevState) => {                
-                if(prevState.length && value > 0){
-                   return prevState?.filter((item) => item?.price <= value)
-                } else {
-                    return productList?.filter((item) => {
-                        const categoryName = categoryList?.find((cat_Item) => cat_Item?._id === item?.category)?.name                        
-                        return categoryName === currentCategory
-                    })
-                }
-            }
-        );
+        setPriceRange(value)
+        handleProductDisplay()
+        //     if (prevState.length && value > 0) {
+        //     } else {
+        //         return productList?.filter((item) => {
+        //             const categoryName = categoryList?.find((cat_Item) => cat_Item?._id === item?.category)?.name
+        //             return categoryName === currentCategory
+        //         })
+        //     }
+        // }
     }, 100)
 
     return (
@@ -96,6 +135,8 @@ function Shop(props) {
                                                 type="search"
                                                 className="form-control p-3"
                                                 placeholder="keywords"
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
                                                 aria-describedby="search-icon-1"
                                             />
                                             <span id="search-icon-1" className="input-group-text p-3">
@@ -112,11 +153,13 @@ function Shop(props) {
                                                 name="fruitlist"
                                                 className="border-0 form-select-sm bg-light me-3"
                                                 form="fruitform"
+                                                value={selectedOption}
+                                                onChange={(e) => setSelectedOption(e.target.value)}
                                             >
-                                                <option value="volvo">Nothing</option>
-                                                <option value="saab">Popularity</option>
-                                                <option value="opel">Organic</option>
-                                                <option value="audi">Fantastic</option>
+                                                <option value="Name(A-Z)">Name(A-Z)</option>
+                                                <option value="Name(Z-A)">Name(Z-A)</option>
+                                                <option value="PLH">Price(Low-High)</option>
+                                                <option value="PHL">Priec(High-Low)</option>
                                             </select>
                                         </div>
                                     </div>
@@ -128,6 +171,25 @@ function Shop(props) {
                                                 <div className="mb-3">
                                                     <h4>Categories</h4>
                                                     <ul className="list-unstyled fruite-categorie">
+                                                        <li>
+                                                            <div className="d-flex justify-content-between fruite-name">
+                                                                <span
+                                                                    style={{ cursor: "pointer" }}
+                                                                    className={
+                                                                        currentCategory === 'All Categories'
+                                                                            ? "active"
+                                                                            : ""
+                                                                    }
+                                                                    onClick={() => {
+                                                                        setCurrentCategory("All Categories");
+                                                                        handleProductDisplay();
+                                                                    }}
+                                                                >
+                                                                    All Categories
+                                                                </span>
+                                                                <span>{productList?.length}</span>
+                                                            </div>
+                                                        </li>
                                                         {categoryList?.map((item) => {
                                                             const productByCategory = productList?.filter(
                                                                 (product_Item) =>
@@ -139,13 +201,13 @@ function Shop(props) {
                                                                         <span
                                                                             style={{ cursor: "pointer" }}
                                                                             className={
-                                                                                currentCategory === item?.name
+                                                                                currentCategory === item?._id
                                                                                     ? "active"
                                                                                     : ""
                                                                             }
                                                                             onClick={() => {
-                                                                                setProductData(productByCategory);
-                                                                                setCurrentCategory(item?.name);
+                                                                                setCurrentCategory(item?._id);
+                                                                                handlePriceChange();
                                                                             }}
                                                                         >
                                                                             {item?.name}
@@ -154,14 +216,14 @@ function Shop(props) {
                                                                     </div>
                                                                 </li>
                                                             );
-                                                        })}                                                        
+                                                        })}
                                                     </ul>
                                                 </div>
                                             </div>
                                             <div className="col-lg-12">
                                                 <div className="mb-3">
                                                     <h4 className="mb-2">Price</h4>
-                                                    <input
+                                                    {/* <input
                                                         type="range"
                                                         className="form-range w-100"
                                                         id="rangeInput"
@@ -170,11 +232,21 @@ function Shop(props) {
                                                         max={500}
                                                         value={priceRange}
                                                         onInput={(e) => handlePriceChange(+e.target.value)}  
+                                                    /> */}
+                                                    <Slider
+                                                        className="form-range w-100"
+                                                        size="small"
+                                                        min={1}
+                                                        max={500}
+                                                        value={priceRange}
+                                                        onChange={(e) => handlePriceChange(+e.target.value)}
+                                                        aria-label="Small"
+                                                        valueLabelDisplay="auto"
                                                     />
                                                     <output
-                                                        id="amount"                                                        
+                                                        id="amount"
                                                         name="amount"
-                                                        min-velue={0}
+                                                        min-velue={1}
                                                         max-value={500}
                                                         htmlFor="rangeInput"
                                                     >
@@ -357,13 +429,13 @@ function Shop(props) {
                                     </div>
                                     <div className="col-lg-9">
                                         <div className="row g-4 justify-content-center">
-                                            {productData.map((product_Item) => {
+                                            {productData?.length ? productData?.map((product_Item) => {
                                                 {
                                                     /* const categoryName = categoryList?.find((item) => item?._id === product_Item?.category)?.name; */
                                                 }
                                                 const subCategoryName = subCategoryList?.find(
                                                     (item) => item?._id === product_Item?.sub_category
-                                                )?.name;                                                
+                                                )?.name;
 
                                                 return (
                                                     <div
@@ -405,7 +477,8 @@ function Shop(props) {
                                                         </div>
                                                     </div>
                                                 );
-                                            })}                                            
+                                            })
+                                                : <span className="no-product">No Products Found!</span>}
                                             <div className="col-12">
                                                 <div className="pagination d-flex justify-content-center mt-5">
                                                     <a href="#" className="rounded">

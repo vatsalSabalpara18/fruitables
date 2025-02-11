@@ -6,3 +6,9 @@
 .active {
     color: green;
 }
+
+.no-product {
+    text-align: center;
+    font-weight: bold;
+    font-size: 24px;
+}
