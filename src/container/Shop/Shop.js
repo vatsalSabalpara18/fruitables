@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { getProducts } from "../../redux/reducer/slice/product.slice";
 import { getCategories } from "../../redux/reducer/slice/category.slice";
 import { getSubCategories } from "../../redux/reducer/slice/subcategory.slice";
@@ -442,6 +442,7 @@ function Shop(props) {
                                                         className="col-md-6 col-lg-6 col-xl-4"
                                                         key={product_Item?._id}
                                                     >
+                                                        <NavLink to={`/shop_detail/${product_Item?._id}`}>
                                                         <div className="rounded position-relative fruite-item">
                                                             <div className="fruite-img">
                                                                 <img
@@ -475,6 +476,7 @@ function Shop(props) {
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        </NavLink>
                                                     </div>
                                                 );
                                             })
