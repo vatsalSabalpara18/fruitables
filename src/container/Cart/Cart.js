@@ -1,16 +1,27 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { IMAGE_URL } from '../../utills/baseURL';
 import './cart.css'
 import { decrementQty, incrementQty, removeProduct } from '../../redux/reducer/slice/cart.slice';
+import { getCoupons } from '../../redux/reducer/slice/coupon.slice';
 
 function Cart(props) {
     const dispatch = useDispatch();
+    const [coupon, setCoupon] = useState('');
+    const [couponError, setCouponError] = useState('');
+    const [appliedCoupon, setAppliedCoupon] = useState({});
     const productList = useSelector(
         (state) => state.product?.products,
         shallowEqual
     );
+
+    useEffect(() => {
+        dispatch(getCoupons());
+    }, [])
+
     const cart = useSelector((state) => state.cart.cartData);
+
+    const couponCode = useSelector(state => state.coupon.couponCode);
 
     const finalCartData = cart?.map((cart_Item) => {
         const match = productList?.find((product_Item) => product_Item?._id === cart_Item?.pId);
@@ -20,13 +31,22 @@ function Cart(props) {
                 qty: cart_Item?.qty
             }
         }
-    })
-    
-    console.log("cartfinalData", finalCartData);
+    })    
 
     const sub_total = finalCartData?.reduce((acc, item) => acc + (item?.qty * item?.price) ,0).toFixed(2);
 
-    const total = parseFloat(sub_total) + 3.00;
+    const total = useMemo( () => Object.keys(appliedCoupon).length ? parseFloat(sub_total) + 3.00 - (appliedCoupon?.discount * parseFloat(sub_total) / 100 ) : parseFloat(sub_total) + 3.00 , [appliedCoupon, sub_total]) ;
+
+    const handleApplyCoupon = () => {
+        const match = couponCode.find((item) => item?.name === coupon);
+        if(match) {
+            setAppliedCoupon(match);
+            setCouponError('');
+        } else {
+            setAppliedCoupon({});
+            setCouponError('Invalid Coupon');
+        }
+    }
 
     return (
         <>
@@ -188,9 +208,10 @@ function Cart(props) {
                         </table>
                     </div>
                     <div className="mt-5">
-                        <input type="text" className="border-0 border-bottom rounded me-5 py-3 mb-4" placeholder="Coupon Code" />
-                        <button className="btn border-secondary rounded-pill px-4 py-3 text-primary" type="button">Apply Coupon</button>
+                        <input type="text" className="border-0 border-bottom rounded me-5 py-3 mb-4" value={coupon} onChange={(e) => setCoupon(e.target.value)} placeholder="Coupon Code" />
+                        <button className="btn border-secondary rounded-pill px-4 py-3 text-primary" onClick={handleApplyCoupon} type="button">Apply Coupon</button>
                     </div>
+                    <div style={{color:'red'}}>{couponError ?? ""}</div>
                     <div className="row g-4 justify-content-end">
                         <div className="col-8" />
                         <div className="col-sm-8 col-md-7 col-lg-6 col-xl-4">
@@ -208,10 +229,18 @@ function Cart(props) {
                                         </div>
                                     </div>
                                     <p className="mb-0 text-end">Shipping to Ukraine.</p>
+                                    {
+                                        Object.keys(appliedCoupon).length && (
+                                            <div className="d-flex justify-content-between mb-4">
+                                                <h5 className="mb-0 me-4">Discount:</h5>
+                                                <p className="mb-0"> {appliedCoupon?.discount ?? 0} % oFF</p>
+                                            </div>
+                                        )
+                                    }
                                 </div>
                                 <div className="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
                                     <h5 className="mb-0 ps-4 me-4">Total</h5>
-                                    <p className="mb-0 pe-4">${sub_total ? total ?? 0 : 0}</p>
+                                    <p className="mb-0 pe-4">${sub_total ? total.toFixed(2) ?? 0 : 0}</p>
                                 </div>
                                 <button className="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Proceed Checkout</button>
                             </div>
