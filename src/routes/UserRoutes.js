@@ -1,5 +1,5 @@
-import React from 'react';
-import { Route, Routes } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Route, Routes, useNavigate } from "react-router-dom";
 import Footer from "../component/Footer/Footer";
 import Header from "../component/Header/Header";
 import Page404 from "../container/404Page/Page404";
@@ -13,8 +13,38 @@ import Testimonial from "../container/Testimonial/Testimonial";
 import UserRegisterPage from '../container/UserRegisterPage/UserRegisterPage';
 import SubCategoryList from '../container/SubCategory/SubCategoryList';
 import Auth from '../container/Auth/Auth';
+import { useDispatch, useSelector } from 'react-redux';
+import Spinner from '../component/Spinner/Spinner';
+import { checkAuth } from '../redux/reducer/slice/auth.slice';
 
 function UserRoutes(props) {
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const [loading, setLoading] = useState(true);
+
+    const auth = useSelector(s => s.auth);
+
+    const fetchAuthentication = async () => {
+        try {
+            await dispatch(checkAuth());
+        } catch (error) {
+            navigate('/');
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+    
+    useEffect(() => {
+        fetchAuthentication()
+    }, []);
+
+    if (loading) {
+        return <Spinner />
+    }
+
     return (
         <>
             <Header />
@@ -31,8 +61,8 @@ function UserRoutes(props) {
                 <Route path="/testimonial" element={<Testimonial />} />
                 <Route path="/register" element={<UserRegisterPage />} />
                 <Route path="/auth" element={<Auth />} />
-                <Route path='/subcategories/:cat_id' element={<SubCategoryList/>}/>
-            </Routes>           
+                <Route path='/subcategories/:cat_id' element={<SubCategoryList />} />
+            </Routes>
             <Footer />
         </>
     );

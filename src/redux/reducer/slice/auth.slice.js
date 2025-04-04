@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import axios from "axios"
+import axiosInstance from "../../../utills/axiosInstance";
 
 const initialState = {
     isLoading: false,
@@ -12,7 +12,7 @@ export const registerUser = createAsyncThunk(
     'auth/registerUser',
     async (data) => {
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/user/register', data);
+            const response = await axiosInstance.post('/user/register', data);
             console.log(response.data);
         } catch (error) {
             console.error(error);
@@ -24,7 +24,7 @@ export const loginUser = createAsyncThunk(
     'auth/loginUser',
     async (data) => {
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/user/login', data, { withCredentials: true });
+            const response = await axiosInstance.post('/user/login', data);
             console.log(response.data);
 
             if (response.data?.success) {
@@ -41,10 +41,25 @@ export const logoutUser = createAsyncThunk(
     'auth/logoutUser',
     async (data) => {
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/user/logout', data, { withCredentials: true });
+            const response = await axiosInstance.post('/user/logout', data);
             console.log(response.data);
         } catch (error) {
             console.log(error);
+        }
+    }
+)
+
+export const checkAuth = createAsyncThunk(
+    'auth/checkAuth',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get('/user/check-auth');
+            console.log(response.data);
+            if (response.data?.success) {
+                return response.data?.data
+            }
+        } catch (error) {
+            return rejectWithValue(JSON.stringify(error));            
         }
     }
 )
@@ -64,6 +79,18 @@ const authSlice = createSlice({
             state.isValid = false;
             state.user = null;
             state.error = null;
+        })
+        builder.addCase(checkAuth.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.isValid = true;
+            state.user = action.payload;
+            state.error = null
+        })
+        builder.addCase(checkAuth.rejected, (state, action) => {
+            state.isLoading = true;
+            state.isValid = false;
+            state.user = null;
+            state.error = JSON.parse(action.payload)
         })
     }
 })

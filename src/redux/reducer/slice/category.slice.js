@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import axios from "axios"
 import { API_BASE_URL } from "../../../utills/baseURL"
+import axiosInstance from "../../../utills/axiosInstance"
 
 const initialState = {
     isLoading: false,
@@ -12,7 +12,7 @@ export const createCategory = createAsyncThunk(
     'Category/createCategory',
     async (data) => {
         try {
-            const response = await axios.post(API_BASE_URL + 'categories/add-category', data, {
+            const response = await axiosInstance.post('categories/add-category', data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -27,7 +27,7 @@ export const createCategory = createAsyncThunk(
 export const getCategories = createAsyncThunk(
     'Category/getCategories', async () => {
         try {
-            const response = await axios.get(API_BASE_URL + 'categories/list-categories');
+            const response = await axiosInstance.get('categories/list-categories');
             return response.data?.data;
         } catch (error) {
             console.error(error);
@@ -38,7 +38,7 @@ export const getCategories = createAsyncThunk(
 export const deleteCategories = createAsyncThunk(
     'Category/deleteCategories', async (id) => {
         try {
-            const response = await axios.delete(API_BASE_URL + 'categories/delete-category/' + id);
+            const response = await axiosInstance.delete('categories/delete-category/' + id);
             return response.data?.data?._id
         } catch (error) {
             console.error(error);
@@ -49,7 +49,7 @@ export const deleteCategories = createAsyncThunk(
 export const updateCategory = createAsyncThunk(
     'Category/updateCategory', async (data) => {
         try {
-            const response = await axios.put(API_BASE_URL + 'categories/update-category/'+ data?._id, data, {
+            const response = await axiosInstance.put('categories/update-category/'+ data?._id, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
