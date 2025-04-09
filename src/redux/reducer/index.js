@@ -2,6 +2,11 @@ import { combineReducers } from "redux";
 import { counterReducer } from "./counter.reducer";
 import subcategorySlice from "./slice/subcategory.slice";
 import userReducer from "./slice/user.slice";
+import categoryReducer from "./slice/category.slice";
+import productReducer from './slice/product.slice';
+import cartReducer from './slice/cart.slice';
+import couponCodeReducer from './slice/coupon.slice';
+import authReducer from './slice/auth.slice';
 
 // export const intialState = {
 //     value: 0
@@ -15,5 +20,10 @@ import userReducer from "./slice/user.slice";
 export const rootReducer = combineReducers({
     counter: counterReducer,
     subcategory: subcategorySlice,
-    user: userReducer
+    user: userReducer,
+    category: categoryReducer,
+    product: productReducer,
+    cart: cartReducer,
+    coupon: couponCodeReducer,
+    auth: authReducer
 });

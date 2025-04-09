@@ -21,6 +21,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import CategoryIcon from '@mui/icons-material/Category';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import CountertopsIcon from '@mui/icons-material/Countertops';
+import ArticleIcon from '@mui/icons-material/Article';
 import { NavLink } from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -130,6 +131,16 @@ export default function Layout({ children }) {
             label: 'Counter',
             icon: <CountertopsIcon />,
             to: '/admin/counter'
+        },
+        {
+            label: 'Product',
+            icon: <AnalyticsIcon />,
+            to: '/admin/product'
+        },
+        {
+            label: 'Coupon Code',
+            icon: <ArticleIcon />,
+            to: '/admin/coupon-code'
         }
     ];
 

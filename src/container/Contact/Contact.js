@@ -35,11 +35,9 @@ function Contact(props) {
         setContactTable(newData);
     }
 
-    const handleEdit = (data) => {
-        console.log("handleEdit", data);
+    const handleEdit = (data) => {        
         const localData = JSON.parse(localStorage.getItem('contact'));
-        const index = localData.findIndex((item) => item.id === data.id);
-        console.log("index", index);        
+        const index = localData.findIndex((item) => item.id === data.id);      
         setIsEdit(index);
         setValues(data);
     }

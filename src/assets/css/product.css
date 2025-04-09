@@ -1,0 +1,14 @@
+.product_img {
+    height: 170px !important;
+    object-fit: cover;
+}
+
+.active {
+    color: green;
+}
+
+.no-product {
+    text-align: center;
+    font-weight: bold;
+    font-size: 24px;
+}

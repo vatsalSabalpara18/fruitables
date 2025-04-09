@@ -12,45 +12,58 @@ import EditIcon from '@mui/icons-material/Edit';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-import { number, object, string } from 'yup';
+import { mixed, number, object, string } from 'yup';
 import { useFormik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { addSubCategories, deleteCategories, getSubCategories, updateCategories } from '../../../redux/reducer/slice/subcategory.slice';
+import { API_BASE_URL, IMAGE_URL } from '../../../utills/baseURL';
+import axios from 'axios';
+import { getCategories } from '../../../redux/reducer/slice/category.slice';
 
 function SubCategory(props) {
     const dispatch = useDispatch();
     const [open, setOpen] = React.useState(false);
     const [isUpdate, setIsUpdate] = React.useState(false);
-    const [categoryList, setCategoryList] = React.useState([]);
 
     const subCategory = useSelector(state => state.subcategory);
+    const categoryList = useSelector(state => state.category.categories);
 
-    const getCategoryList = () => {
-        const localCategoryData = JSON.parse(localStorage.getItem('category'));
-        if (localCategoryData) {
-            setCategoryList(localCategoryData);
-        }
+    const getCategoryList = async () => {
+        dispatch(getCategories());
     }
 
-    const handleDelete = (id) => { 
-        console.log("id",id)
+    const handleDelete = (id) => {        
         dispatch(deleteCategories(id))
     }
 
-    const handleEdit = (data) => { 
-        handleClickOpen()
-        console.log(data);
+    const handleEdit = (data) => {
+        handleClickOpen();
         setValues(data)
         setIsUpdate(true)
-     }
+    }
 
     const columns = [
         {
-            field: 'category_id',
+            field: 'sub_cat_img',
+            headerName: 'Sub Category Image',
+            width: 150,
+            renderCell: (params) => {
+               return (
+                    <img
+                       src={IMAGE_URL + params.row.sub_cat_img}
+                       alt={params.row.sub_cat_img}
+                        height={50}
+                        width={50}
+                    />
+                )
+            }
+        },
+        {
+            field: 'category',
             headerName: 'Category',
             width: 130,
-            valueGetter: (value) => {                
-                return categoryList.find(item => item.id === value)?.name;
+            valueGetter: (value) => {
+                return categoryList.find(item => item._id === value)?.name;
             }
         },
         { field: 'name', headerName: 'Name', width: 200 },
@@ -64,7 +77,7 @@ function SubCategory(props) {
                     <IconButton aria-label="edit" onClick={() => handleEdit(params.row)}>
                         <EditIcon />
                     </IconButton>
-                    <IconButton aria-label="delete" onClick={() => handleDelete(params.row.id)}>
+                    <IconButton aria-label="delete" onClick={() => handleDelete(params.row._id)}>
                         <GridDeleteIcon />
                     </IconButton>
                 </strong>
@@ -84,9 +97,31 @@ function SubCategory(props) {
     }, []);
 
     const SubCategorySchema = object({
-        category_id: number().required(),
+        category: string().required(),
         name: string().required(),
-        description: string().required()
+        description: string().required(),
+        sub_cat_img: mixed()
+            .required("You need provide the file.")
+            .test("profile", "The file is too large", (value) => {
+                if (typeof value === "string") {
+                    return true
+                } else if (typeof value === "object") {
+                    return value && value.size <= 2000000;
+                }
+            })
+            .test(
+                "profile",
+                "only the following formats are allowed: jpeg, jpg & png",
+                (value) => {
+                    if (typeof value === "string") {
+                        return true
+                    } else if (typeof value === "object") {
+                        return (
+                            value && (value.type === "image/jpeg" || value.type === "image/png")
+                        );
+                    }
+                }
+            ),
     });
 
     const AddSubCategory = (values) => {
@@ -94,21 +129,20 @@ function SubCategory(props) {
         dispatch(addSubCategories(values));
     }
 
-    const UpdateSubCategory = (values) => {              
+    const UpdateSubCategory = (values) => {
         dispatch(updateCategories(values))
     }
 
     const formik = useFormik({
         initialValues: {
-            category_id: 0,
+            category: 0,
             name: '',
-            description: ''
+            description: '',
+            sub_cat_img: ''
         },
         validationSchema: SubCategorySchema,
-        onSubmit: (values, { resetForm }) => {
-            // alert(JSON.stringify(values, null, 2));
-            console.log(values, "from values")
-            if(isUpdate){
+        onSubmit: (values, { resetForm }) => {              
+            if (isUpdate) {
                 UpdateSubCategory(values)
             } else {
                 AddSubCategory(values);
@@ -118,7 +152,7 @@ function SubCategory(props) {
         },
     });
 
-    const { handleSubmit, handleChange, handleBlur, values, errors, touched, setValues, resetForm } = formik;
+    const { handleSubmit, handleChange, handleBlur, values, errors, touched, setValues, resetForm, setFieldValue } = formik;
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -140,29 +174,29 @@ function SubCategory(props) {
                     open={open}
                     onClose={handleClose}
                 >
-                    <form onSubmit={handleSubmit}>
+                    <form onSubmit={handleSubmit} enctype="multipart/form-data">
                         <DialogTitle>Sub Category</DialogTitle>
                         <DialogContent>
                             <InputLabel id="demo-simple-select-standard-label">category</InputLabel>
-                            <FormControl fullWidth error={errors.category_id && touched.category_id ? errors.category_id : ''}>
+                            <FormControl fullWidth error={errors.category && touched.category ? errors.category : ''}>
                                 <Select
                                     labelId="demo-simple-select-standard-label"
                                     id="demo-simple-select-standard"
-                                    value={values.category_id}
+                                    value={values.category}
                                     onChange={handleChange}
                                     label="Age"
                                     fullWidth
                                     variant='standard'
-                                    error={errors.category_id && touched.category_id}
+                                    error={errors.category && touched.category}
                                     onBlur={handleBlur}
-                                    name="category_id"
+                                    name="category"
                                 >
                                     <MenuItem value="0">
                                         <em>None</em>
                                     </MenuItem>
                                     {
-                                        categoryList.map((item, index) => {
-                                            return <MenuItem key={index} value={item.id}>{item.name}</MenuItem>
+                                        categoryList.map((item) => {
+                                            return <MenuItem key={item._id} value={item._id}>{item.name}</MenuItem>
                                         })
                                     }
                                 </Select>
@@ -196,9 +230,36 @@ function SubCategory(props) {
                                 helperText={errors.description && touched.description ? errors.description : ''}
                                 onBlur={handleBlur}
                             />
+                            <div>
+                                <label htmlFor="sub_cat_img">sub_category_img: </label>
+                                <input
+                                    id="sub_cat_img"
+                                    type="file"
+                                    name="sub_cat_img"
+                                    style={{ marginLeft: "10px" }}
+                                    onChange={(e) =>
+                                        setFieldValue("sub_cat_img", e.target.files[0])
+                                    }
+                                />
+                                <img
+                                    src={
+                                        typeof values?.sub_cat_img === "string"
+                                            ? IMAGE_URL + values?.sub_cat_img
+                                            : values.sub_cat_img !== null ? URL.createObjectURL(values.sub_cat_img) : 'img/avatar.jpg'
+                                        // :  URL.createObjectURL(values.cat_img)
+                                    }
+                                    height={"100"}
+                                    width={"100"}
+                                />
+                                {errors.sub_cat_img && touched.sub_cat_img ? (
+                                    <p style={{ color: "red", fontSize: "small" }}>
+                                        {errors.sub_cat_img}
+                                    </p>
+                                ) : null}
+                            </div>
                             <DialogActions>
                                 <Button onClick={handleClose}>Cancel</Button>
-                                <Button type="submit">{ isUpdate ? "Update" : "Submit"}</Button>
+                                <Button type="submit">{isUpdate ? "Update" : "Submit"}</Button>
                             </DialogActions>
                         </DialogContent>
 
@@ -210,6 +271,7 @@ function SubCategory(props) {
                     <DataGrid
                         rows={subCategory.subCategoryData}
                         columns={columns}
+                        getRowId={(row) => row._id}
                         initialState={{ pagination: { paginationModel } }}
                         pageSizeOptions={[5, 10]}
                         checkboxSelection
