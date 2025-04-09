@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { API_BASE_URL } from "../../../utills/baseURL"
 import axiosInstance from "../../../utills/axiosInstance"
+import { setAlert } from "./alert.slice"
 
 const initialState = {
     isLoading: false,
@@ -10,54 +11,70 @@ const initialState = {
 
 export const createCategory = createAsyncThunk(
     'Category/createCategory',
-    async (data) => {
+    async (data, { dispatch, rejectWithValue }) => {
         try {
             const response = await axiosInstance.post('categories/add-category', data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
-            })            
-            return response.data.data;
+            })
+            if (response.data?.success) {
+                dispatch(setAlert({ varriant: 'success', message: response?.data?.message }));
+                return response.data.data;
+            }
         } catch (error) {
-            console.error(error)
+            dispatch(setAlert({ varriant: 'error', message: error?.response?.data?.message }));
+            return rejectWithValue(error?.response?.data?.message);
         }
     }
 )
 
 export const getCategories = createAsyncThunk(
-    'Category/getCategories', async () => {
+    'Category/getCategories', async (_, { dispatch, rejectWithValue }) => {
         try {
             const response = await axiosInstance.get('categories/list-categories');
-            return response.data?.data;
+            if (response?.data?.success) {
+                dispatch(setAlert({ varriant: 'success', message: response?.data?.message }));
+                return response.data?.data;
+            }
         } catch (error) {
-            console.error(error);
+            dispatch(setAlert({ varriant: 'error', message: error?.response?.data?.message }));
+            return rejectWithValue(error?.response?.data?.message);
         }
     }
 )
 
 export const deleteCategories = createAsyncThunk(
-    'Category/deleteCategories', async (id) => {
+    'Category/deleteCategories', async (id, { dispatch, rejectWithValue }) => {
         try {
             const response = await axiosInstance.delete('categories/delete-category/' + id);
-            return response.data?.data?._id
+            if (response.data?.success) {
+                dispatch(setAlert({ varriant: 'success', message: response?.data?.message }));
+                return response.data?.data?._id
+            }
         } catch (error) {
-            console.error(error);
+            dispatch(setAlert({ varriant: 'error', message: error?.response?.data?.message }));
+            return rejectWithValue(error?.response?.data?.message);
         }
     }
 )
 
 export const updateCategory = createAsyncThunk(
-    'Category/updateCategory', async (data) => {
+    'Category/updateCategory', async (data, { dispatch, rejectWithValue }) => {
         try {
-            const response = await axiosInstance.put('categories/update-category/'+ data?._id, data, {
+            const response = await axiosInstance.put('categories/update-category/' + data?._id, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
 
-            return response.data?.data;
+            if (response.data?.success) {
+                dispatch(setAlert({ varriant: 'success', message: response?.data?.message }));
+                return response.data.data;
+            }
         } catch (error) {
-            console.error(error)
+            dispatch(setAlert({ varriant: 'error', message: error?.response?.data?.message }));
+            return rejectWithValue(error?.response?.data?.message);
         }
     }
 )
@@ -77,6 +94,26 @@ const categorySlice = createSlice({
         })
         builder.addCase(updateCategory.fulfilled, (state, action) => {
             state.categories = state.categories.map((v) => v._id === action.payload._id ? action.payload : v);
+        })
+        builder.addCase(getCategories.rejected, (state, action) => {
+            state.isLoading = false;
+            state.categories = null;
+            state.error = action.payload;
+        })
+        builder.addCase(createCategory.rejected, (state, action) => {
+            state.isLoading = false;
+            state.categories = null;
+            state.error = action.payload;
+        })
+        builder.addCase(updateCategory.rejected, (state, action) => {
+            state.isLoading = false;
+            state.categories = null;
+            state.error = action.payload;
+        })
+        builder.addCase(deleteCategories.rejected, (state, action) => {
+            state.isLoading = false;
+            state.categories = null;
+            state.error = action.payload;
         })
 
     }
