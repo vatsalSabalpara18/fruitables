@@ -29,7 +29,7 @@ axiosInstance.interceptors.response.use(function (response) {
             return axiosInstance(error?.config);
         } catch (error) {
             console.log("error in the gen new token");
-            Promise.reject(error);
+           return Promise.reject(error);
         }
     }
 

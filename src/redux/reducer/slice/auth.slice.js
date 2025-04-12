@@ -16,6 +16,7 @@ export const registerUser = createAsyncThunk(
             const response = await axiosInstance.post('/user/register', data);
             console.log(response.data);
             if (response.data.success) {
+                localStorage.setItem('userEmail', response?.data?.data?.email);
                 dispatch(setAlert({ varriant: 'success', message: response?.data?.message }));
             }
         } catch (error) {
@@ -40,6 +41,23 @@ export const loginUser = createAsyncThunk(
         } catch (error) {
             dispatch(setAlert({ varriant: 'error', message: error?.response?.data?.message }));
             return rejectWithValue(error?.response?.data?.message);
+        }
+    }
+)
+export const verifyOTP = createAsyncThunk(
+    'auth/verifyOTP',
+    async (data, { dispatch }) => {
+        try {
+            const response = await axiosInstance.post('/user/verify-otp', data);
+            console.log(response.data);
+
+            if (response.data?.success) {
+                localStorage.removeItem('userEmail');
+                dispatch(setAlert({ varriant: 'success', message: response?.data?.message }));                
+            }
+
+        } catch (error) {
+            dispatch(setAlert({ varriant: 'error', message: error?.response?.data?.message }));            
         }
     }
 )
