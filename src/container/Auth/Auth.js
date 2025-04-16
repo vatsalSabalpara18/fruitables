@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from 'formik';
-import { number, object, string } from 'yup';
+import { number, object, ref, string } from 'yup';
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, registerUser, verifyOTP } from "../../redux/reducer/slice/auth.slice";
+import { forgotPassword, loginUser, registerUser, resetPassword, verifyOTP } from "../../redux/reducer/slice/auth.slice";
 import { useNavigate } from "react-router-dom";
 
 function Auth() {
@@ -10,6 +10,7 @@ function Auth() {
     const navigate = useNavigate();
     const auth = useSelector(s => s.auth);
     const [type, setType] = useState("login");
+    const [typeIsPass, setTypeIsPass] = useState(false);
     const [userEmail, setUserEmail] = useState('');
 
     let initialValue = {}, validationSchema = {};
@@ -45,6 +46,17 @@ function Auth() {
             otp: number().required()
         }
 
+    } else if (type === 'conform_password') {
+        initialValue = {
+            password: '',
+            conform_password: ''
+        }
+
+        validationSchema = {
+            password: number().required(),
+            conform_password: number().required().oneOf([ref('password')], "password must match")
+        }
+
     } else {
         initialValue = {
             email: ''
@@ -74,23 +86,41 @@ function Auth() {
                     setType('OTP');
                     setUserEmail(values?.email);
                 }
-            } else if (type === 'OTP') {
-                console.log('OTP', values);
+            } else if (type === 'OTP') {                
                 const res = await dispatch(verifyOTP({ email: userEmail, otp: values?.otp }))
 
                 if (res.type == "auth/verifyOTP/fulfilled") {
-                    setType('login');
-                    setUserEmail('');
+                    if(typeIsPass){
+                        setType('conform_password')
+                    } else {
+                        setType('login');
+                        setUserEmail('');
+                    }
                 }
 
-            } else {
+            } else if(type == 'password'){
+                const res = await dispatch(forgotPassword(values))
 
+                if (res.type === 'auth/forgotPassword/fulfilled'){
+                    setType('OTP');
+                    setTypeIsPass(true);                
+                    localStorage.setItem('userEmail', values?.email);
+                    setUserEmail(values?.email);
+                }
+            } else if (type == "conform_password"){
+                const res = await dispatch(resetPassword({password: values?.password, email: userEmail}))
+
+                if (res.type == "auth/resetPassword/fulfilled"){
+                    setType('login');
+                    setTypeIsPass(false);
+                    localStorage.removeItem('userEmail');
+                    setUserEmail('');
+                }
             }
             resetForm();
         },
     });
-
-    console.log('user registration', type, userEmail, initialValue, validationSchema);
+    
     const { handleSubmit, handleChange, handleBlur, values, errors, touched, setValues, resetForm, setFieldValue } = formik;
 
     if (auth.isValid) {
@@ -123,6 +153,7 @@ function Auth() {
                         type === "login" ? "Login" :
                             type === "password" ? "Forgot Password" :
                                 type === 'OTP' ? "Verify OTP" :
+                                    type === 'conform_password' ? "Password Conformation" :                                
                                     "Register"
                     }
                 </h1>
@@ -138,6 +169,7 @@ function Auth() {
                             type === "login" ? "Login" :
                                 type === "password" ? "Forgot Password" :
                                     type === 'OTP' ? "Verify OTP" :
+                                        type === 'conform_password' ? "Password Conformation" :
                                         "Register"
                         }
                     </li>
@@ -172,7 +204,7 @@ function Auth() {
                                         ) : null
                                     }
                                     {
-                                        type !== 'OTP' ? (
+                                        type == 'register' || type == "login" || type == 'password' ? (
                                             <>
                                                 <input
                                                     type="email"
@@ -192,7 +224,7 @@ function Auth() {
                                         ) : null
                                     }
                                     {
-                                        (type === 'register' || type === 'login') ? (
+                                        (type === 'register' || type === 'login' || type === 'conform_password') ? (
                                             <>
                                                 <input
                                                     type="password"
@@ -206,6 +238,26 @@ function Auth() {
                                                 <span>
                                                     {
                                                         errors.password && touched.password ? errors.password : null
+                                                    }
+                                                </span>
+                                            </>
+                                        ) : null
+                                    }
+                                    {
+                                        type === 'conform_password' ? (
+                                            <>
+                                                <input
+                                                    type="password"
+                                                    className="w-100 form-control border-0 py-3 mb-4"
+                                                    placeholder="Enter Your Password"
+                                                    name="conform_password"
+                                                    value={values.conform_password}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                />
+                                                <span>
+                                                    {
+                                                        errors.conform_password && touched.conform_password ? errors.conform_password : null
                                                     }
                                                 </span>
                                             </>
@@ -239,6 +291,7 @@ function Auth() {
                                             type === "login" ? "Login" :
                                                 type === "password" ? "Submit" :
                                                     type === 'OTP' ? "Verify OTP" :
+                                                        type === 'conform_password' ? "Create Password" :
                                                         "Register"
                                         }
                                     </button>

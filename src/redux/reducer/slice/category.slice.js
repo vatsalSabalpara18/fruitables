@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import { API_BASE_URL } from "../../../utills/baseURL"
 import axiosInstance from "../../../utills/axiosInstance"
 import { setAlert } from "./alert.slice"
 
@@ -34,11 +33,11 @@ export const getCategories = createAsyncThunk(
         try {
             const response = await axiosInstance.get('categories/list-categories');
             if (response?.data?.success) {
-                dispatch(setAlert({ varriant: 'success', message: response?.data?.message }));
+                // dispatch(setAlert({ varriant: 'success', message: response?.data?.message }));
                 return response.data?.data;
             }
         } catch (error) {
-            dispatch(setAlert({ varriant: 'error', message: error?.response?.data?.message }));
+            // dispatch(setAlert({ varriant: 'error', message: error?.response?.data?.message }));
             return rejectWithValue(error?.response?.data?.message);
         }
     }

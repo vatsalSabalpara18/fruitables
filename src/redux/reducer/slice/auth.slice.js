@@ -61,6 +61,40 @@ export const verifyOTP = createAsyncThunk(
         }
     }
 )
+export const forgotPassword = createAsyncThunk(
+    'auth/forgotPassword',
+    async (data, { dispatch }) => {
+        try {
+            const response = await axiosInstance.post('/user/forgot-password', data);
+            console.log(response.data);
+
+            if (response.data?.success) {                
+                dispatch(setAlert({ varriant: 'success', message: response?.data?.message }));                
+            }
+
+        } catch (error) {
+            dispatch(setAlert({ varriant: 'error', message: error?.response?.data?.message }));            
+        }
+    }
+)
+export const resetPassword = createAsyncThunk(
+    'auth/resetPassword',
+    async (data, { dispatch }) => {
+        try {
+            const response = await axiosInstance.post('/user/reset-password', data);
+            console.log(response.data);
+
+            if (response.data?.success) {                
+                dispatch(setAlert({ varriant: 'success', message: response?.data?.message }));                
+            }
+
+        } catch (error) {
+            dispatch(setAlert({ varriant: 'error', message: error?.response?.data?.message }));            
+        }
+    }
+)
+
+
 
 export const logoutUser = createAsyncThunk(
     'auth/logoutUser',
@@ -114,6 +148,12 @@ const authSlice = createSlice({
             state.isValid = true;
             state.user = action.payload;
             state.error = null
+        })
+        builder.addCase(forgotPassword.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.isValid = false;
+            state.user = null;
+            state.error = null;
         })
         builder.addCase(checkAuth.rejected, (state, action) => {
             state.isLoading = false;
