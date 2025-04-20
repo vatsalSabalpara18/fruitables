@@ -16,6 +16,7 @@ import Auth from '../container/Auth/Auth';
 import { useDispatch, useSelector } from 'react-redux';
 import Spinner from '../component/Spinner/Spinner';
 import { checkAuth } from '../redux/reducer/slice/auth.slice';
+import Chat from '../container/Chat/Chat';
 
 function UserRoutes(props) {
 
@@ -61,6 +62,7 @@ function UserRoutes(props) {
                 <Route path="/testimonial" element={<Testimonial />} />
                 <Route path="/register" element={<UserRegisterPage />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/chat" element={<Chat />} />
                 <Route path='/subcategories/:cat_id' element={<SubCategoryList />} />
             </Routes>
             <Footer />
