@@ -1,18 +1,20 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCategories } from '../../redux/reducer/slice/category.slice';
 import { IMAGE_URL } from '../../utills/baseURL';
 import { Link } from 'react-router-dom';
+import { ThemeContext } from '../../context/ThemeProvider';
 
 function Home(props) {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
+    const { theme } = useContext(ThemeContext);
     useEffect(() => {
         dispatch(getCategories());
     }, [])
     const category = useSelector(state => state.category?.categories)
     return (
         <>
-            <div>
+            <div className={theme}>
                 {/* Hero Start */}
                 <div className="container-fluid py-5 mb-5 hero-header">
                     <div className="container py-5">
@@ -109,7 +111,7 @@ function Home(props) {
                         <div className="tab-class text-center">
                             <div className="row g-4">
                                 <div className="col-lg-4 text-start">
-                                    <h1>Our Organic Products</h1>
+                                    <h1 style={{ color: theme === "light" ? '#45595b' : '#ffffff' }}>Our Organic Products</h1>
                                 </div>
                                 <div className="col-lg-8 text-end">
                                     <ul className="nav nav-pills d-inline-flex text-center mb-5">
@@ -157,8 +159,8 @@ function Home(props) {
                                                                         </div>
                                                                         {/* <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{ top: 10, left: 10 }}>{cat_Item?.name}</div> */}
                                                                         <div className="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                                            <h4>{cat_Item?.name}</h4>
-                                                                            <p>{cat_Item?.description?.slice(0, 70)}...</p>
+                                                                            <h4 style={{ color: theme === "light" ? '#45595b' : '#ffffff' }} >{cat_Item?.name}</h4>
+                                                                            <p>{cat_Item?.description?.slice(0, 70)}...</p> 
                                                                             <div className="d-flex justify-content-between flex-lg-wrap">
                                                                                 {/* <p className="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p> */}
                                                                                 {/* <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary"><i className="fa fa-shopping-bag me-2 text-primary" /> Add to cart</a> */}
@@ -517,7 +519,7 @@ function Home(props) {
                 {/* Vesitable Shop Start*/}
                 <div className="container-fluid vesitable py-5">
                     <div className="container py-5">
-                        <h1 className="mb-0">Fresh Organic Vegetables</h1>
+                        <h1 className="mb-0" style={{ color: theme === "light" ? '#45595b' : '#ffffff' }} >Fresh Organic Vegetables</h1>
                         <div className="owl-carousel vegetable-carousel justify-content-center">
                             <div className="border border-primary rounded position-relative vesitable-item">
                                 <div className="vesitable-img">
@@ -667,7 +669,7 @@ function Home(props) {
                 <div className="container-fluid py-5">
                     <div className="container py-5">
                         <div className="text-center mx-auto mb-5" style={{ maxWidth: 700 }}>
-                            <h1 className="display-4">Bestseller Products</h1>
+                            <h1 className="display-4" style={{ color: theme === "light" ? '#45595b' : '#ffffff' }} >Bestseller Products</h1>
                             <p>Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable.</p>
                         </div>
                         <div className="row g-4">

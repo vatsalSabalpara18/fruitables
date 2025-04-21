@@ -1,12 +1,14 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { IMAGE_URL } from '../../utills/baseURL';
 import './cart.css'
 import { decrementQty, incrementQty, removeProduct } from '../../redux/reducer/slice/cart.slice';
 import { getCoupons } from '../../redux/reducer/slice/coupon.slice';
+import { ThemeContext } from '../../context/ThemeProvider';
 
 function Cart(props) {
     const dispatch = useDispatch();
+    const { theme } = useContext(ThemeContext)
     const [coupon, setCoupon] = useState('');
     const [couponError, setCouponError] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState({});
@@ -61,7 +63,7 @@ function Cart(props) {
             </div>
             {/* Single Page Header End */}
             {/* Cart Page Start */}
-            <div className="container-fluid py-5">
+            <div className={`container-fluid py-5 ${theme}`}>
                 <div className="container py-5">
                     <div className="table-responsive">
                         <table className="table">
@@ -216,7 +218,7 @@ function Cart(props) {
                         <div className="col-8" />
                         <div className="col-sm-8 col-md-7 col-lg-6 col-xl-4">
                             <div className="bg-light rounded">
-                                <div className="p-4">
+                                <div className="p-4" style={{color: 'black'}}>
                                     <h1 className="display-6 mb-4">Cart <span className="fw-normal">Total</span></h1>
                                     <div className="d-flex justify-content-between mb-4">
                                         <h5 className="mb-0 me-4">Subtotal:</h5>
@@ -230,7 +232,7 @@ function Cart(props) {
                                     </div>
                                     <p className="mb-0 text-end">Shipping to Ukraine.</p>
                                     {
-                                        Object.keys(appliedCoupon).length && (
+                                        Object.keys(appliedCoupon).length > 0 && (
                                             <div className="d-flex justify-content-between mb-4">
                                                 <h5 className="mb-0 me-4">Discount:</h5>
                                                 <p className="mb-0"> {appliedCoupon?.discount ?? 0} % oFF</p>
@@ -240,7 +242,7 @@ function Cart(props) {
                                 </div>
                                 <div className="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
                                     <h5 className="mb-0 ps-4 me-4">Total</h5>
-                                    <p className="mb-0 pe-4">${sub_total ? total.toFixed(2) ?? 0 : 0}</p>
+                                    <p className="mb-0 pe-4" style={{color: 'black'}} >${sub_total ? total.toFixed(2) ?? 0 : 0}</p>
                                 </div>
                                 <button className="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Proceed Checkout</button>
                             </div>

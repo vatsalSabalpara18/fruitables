@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { object, string } from 'yup';
 import { useFormik } from 'formik';
 import { TextField, Button, Box, Paper, IconButton } from '@mui/material';
 import { DataGrid, GridDeleteIcon } from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
+import { ThemeContext } from '../../context/ThemeProvider';
 
 function Contact(props) {
     const [contactTable, setContactTable] = React.useState([]);
+    const { theme } = useContext(ThemeContext)
     const [isEdit, setIsEdit] = React.useState(null);
 
     const getContactData = () => {
@@ -91,7 +93,7 @@ function Contact(props) {
 
     const { handleSubmit, handleChange, handleBlur, values, errors, touched, setValues } = formik;    
     return (
-        <>
+        <div className={theme}>
 
             {/* Single Page Header start */}
             <div className="container-fluid page-header py-5">
@@ -104,9 +106,9 @@ function Contact(props) {
             </div>
             {/* Single Page Header End */}
             {/* Contact Start */}
-            <div className="container-fluid contact py-5">
+            <div className={`container-fluid contact py-5`}>
                 <div className="container py-5">
-                    <div className="p-5 bg-light rounded">
+                    <div className="p-5 rounded">
                         <div className="row g-4">
                             <div className="col-12">
                                 <div className="text-center mx-auto" style={{ maxWidth: 700 }}>
@@ -174,7 +176,7 @@ function Contact(props) {
                             <div className="col-lg-5">
                                 <div className="d-flex p-4 rounded mb-4 bg-white">
                                     <i className="fas fa-map-marker-alt fa-2x text-primary me-4" />
-                                    <div>
+                                    <div style={{ color: theme === "light" ? '#45595b' : '#ffffff' }}>
                                         <h4>Address</h4>
                                         <p className="mb-2">123 Street New York.USA</p>
                                     </div>
@@ -186,7 +188,7 @@ function Contact(props) {
                                         <p className="mb-2">info@example.com</p>
                                     </div>
                                 </div>
-                                <div className="d-flex p-4 rounded bg-white">
+                                <div className="d-flex p-4 rounded mb-4 bg-white">
                                     <i className="fa fa-phone-alt fa-2x text-primary me-4" />
                                     <div>
                                         <h4>Telephone</h4>
@@ -197,7 +199,7 @@ function Contact(props) {
                         </div>
                     </div>
                 </div>
-                <Box sx={{ mt: 5 }}>
+                <Box sx={{ mt: 5, color: theme === "light" ? '#45595b' : '#ffffff'}}>
                     <Paper sx={{ height: 400, width: '100%' }}>
                         <DataGrid
                             rows={contactTable}
@@ -212,7 +214,7 @@ function Contact(props) {
             </div>
             {/*Contact End*/}
 
-        </>
+        </div>
     );
 }
 

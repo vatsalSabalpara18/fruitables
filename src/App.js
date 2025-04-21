@@ -7,6 +7,7 @@ import { SnackbarProvider, enqueueSnackbar } from 'notistack';
 import { PersistGate } from "redux-persist/integration/react";
 import { createStore } from "./redux/store";
 import Alert from "./component/Alert/Alert";
+import ThemeProvider from "./context/ThemeProvider";
 
 function App() {
   const { store, persistor } = createStore();
@@ -14,15 +15,17 @@ function App() {
     <>
       <SnackbarProvider>
         <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <Alert />
-            <Routes>
-              <Route path="/*" element={<UserRoutes />} />
-              <Route element={<PrivateRoutes />} >
-                <Route path="/admin/*" element={<AdminRoutes />} />
-              </Route>
-            </Routes>
-          </PersistGate>
+          <ThemeProvider>
+            <PersistGate loading={null} persistor={persistor}>
+              <Alert />
+              <Routes>
+                <Route path="/*" element={<UserRoutes />} />
+                <Route element={<PrivateRoutes />} >
+                  <Route path="/admin/*" element={<AdminRoutes />} />
+                </Route>
+              </Routes>
+            </PersistGate>
+          </ThemeProvider>
         </Provider>
       </SnackbarProvider>
     </>

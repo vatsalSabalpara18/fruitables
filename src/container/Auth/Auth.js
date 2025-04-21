@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useFormik } from 'formik';
 import { number, object, ref, string } from 'yup';
 import { useDispatch, useSelector } from "react-redux";
 import { forgotPassword, loginUser, registerUser, resetPassword, verifyOTP } from "../../redux/reducer/slice/auth.slice";
 import { useNavigate } from "react-router-dom";
+import { ThemeContext } from "../../context/ThemeProvider";
 
 function Auth() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { theme } = useContext(ThemeContext)
     const auth = useSelector(s => s.auth);
     const [type, setType] = useState("login");
     const [typeIsPass, setTypeIsPass] = useState(false);
@@ -145,7 +147,7 @@ function Auth() {
     }, []);
 
     return (
-        <>
+        <div className={theme}>
             {/* Single Page Header start */}
             <div className="container-fluid page-header py-5">
                 <h1 className="text-center text-white display-6">
@@ -326,7 +328,7 @@ function Auth() {
                 </div>
             </div>
             {/* <!-- AUTH End --> */}
-        </>
+        </div>
     );
 }
 

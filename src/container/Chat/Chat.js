@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { io } from 'socket.io-client';
 import { CHAT_URL } from '../../utills/baseURL';
+import { ThemeContext } from '../../context/ThemeProvider';
 
 const Chat = () => {
 
     const socket = io(CHAT_URL);
+    const { theme } = useContext(ThemeContext)
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [to, setTo] = useState('');
@@ -50,7 +52,7 @@ const Chat = () => {
     }
 
     return (
-        <>
+        <div className={theme}>
             <div className="container-fluid page-header py-5">
                 <h1 className="text-center text-white display-6">Chat</h1>
                 <ol className="breadcrumb justify-content-center mb-0">
@@ -62,7 +64,7 @@ const Chat = () => {
 
             <div className="container-fluid contact py-5">
                 <div className="container py-5">
-                    <div className="p-5 bg-light rounded">
+                    <div className={`p-5 ${theme === 'light' ? 'bg-light': 'dark' } rounded`}>
                         <div className="row g-4">
                             <div className="col-12">
                                 <div className="text-center mx-auto" style={{ maxWidth: 700 }}>
@@ -102,7 +104,7 @@ const Chat = () => {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 
