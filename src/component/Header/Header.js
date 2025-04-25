@@ -1,16 +1,24 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom'
 import { logoutUser } from '../../redux/reducer/slice/auth.slice';
+import { ThemeContext } from '../../context/ThemeProvider';
 
 export default function Header() {
     const dispatch = useDispatch();
     const auth = useSelector(s => s.auth);
     const cart = useSelector((state) => state.cart.cartData);
     const totalCartQty = cart?.reduce((acc, v) => acc + (v?.qty ?? 0), 0);
+
+    const { theme, themeToggle } = useContext(ThemeContext)
+
+    const handleTheme = () => {
+        themeToggle(theme);
+    }
+
     return (
         <>
-            <div className="container-fluid fixed-top">
+            <div className={`container-fluid fixed-top ${theme}`}>
                 <div className="container topbar bg-primary d-none d-lg-block">
                     <div className="d-flex justify-content-between">
                         <div className="top-info ps-2">
@@ -25,12 +33,12 @@ export default function Header() {
                     </div>
                 </div>
                 <div className="container px-0">
-                    <nav className="navbar navbar-light bg-white navbar-expand-xl">
+                    <nav className="navbar navbar-expand-xl">
                         <a href="index.html" className="navbar-brand"><h1 className="text-primary display-6">Fruitables</h1></a>
                         <button className="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                             <span className="fa fa-bars text-primary" />
                         </button>
-                        <div className="collapse navbar-collapse bg-white" id="navbarCollapse">
+                        <div className="collapse navbar-collapse" id="navbarCollapse">
                             <div className="navbar-nav mx-auto">
                                 <NavLink to={"/"} className="nav-item nav-link">Home</NavLink>
                                 <NavLink to={"/shop"} className="nav-item nav-link">Shop</NavLink>
@@ -45,8 +53,14 @@ export default function Header() {
                                     </div>
                                 </div>
                                 <NavLink to={"/contact"} className="nav-item nav-link">Contact</NavLink>
+                                <NavLink to={"/chat"} className="nav-item nav-link">Chat</NavLink>
                             </div>
                             <div className="d-flex m-3 me-0">
+                                <NavLink to={'#'} onClick={handleTheme} className="my-auto m-3">
+                                    {
+                                        theme === "light" ? <i class="fas fa-moon fa-2x"></i> : <i className="fas fa-sun fa-2x"></i>
+                                    }                                                                        
+                                </NavLink>
                                 <button className="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4" data-bs-toggle="modal" data-bs-target="#searchModal"><i className="fas fa-search text-primary" /></button>
                                 <NavLink to={'/cart'} className="position-relative me-4 my-auto">
                                     <i className="fa fa-shopping-bag fa-2x" />
@@ -54,7 +68,7 @@ export default function Header() {
                                 </NavLink>
                                 {
                                     auth.isValid ?
-                                        <a href='#' className='my-auto' onClick={() => dispatch(logoutUser({id: auth.user._id})) }>
+                                        <a href='#' className='my-auto' onClick={() => dispatch(logoutUser({ id: auth.user._id }))}>
                                             <i class="fas fa-sign-out-alt fa-2x"></i>
                                         </a> :
                                         <NavLink to={"/auth"} className="my-auto">

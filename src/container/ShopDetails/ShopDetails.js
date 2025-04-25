@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { getProducts } from "../../redux/reducer/slice/product.slice";
@@ -6,9 +6,11 @@ import { IMAGE_URL } from "../../utills/baseURL";
 import { getCategories } from "../../redux/reducer/slice/category.slice";
 import { getSubCategories } from "../../redux/reducer/slice/subcategory.slice";
 import { addToCart } from "../../redux/reducer/slice/cart.slice";
+import { ThemeContext } from "../../context/ThemeProvider";
 
 function ShopDetails(props) {
     const dispatch = useDispatch();
+    const { theme } = useContext(ThemeContext)
     const { id } = useParams();
 
     useEffect(() => {
@@ -46,7 +48,7 @@ function ShopDetails(props) {
 
     return (
         <>
-            <div>
+            <div className={theme}>
                 {/* Single Page Header start */}
                 <div className="container-fluid page-header py-5">
                     <h1 className="text-center text-white display-6">Shop Detail</h1>

@@ -7,6 +7,7 @@ import productReducer from './slice/product.slice';
 import cartReducer from './slice/cart.slice';
 import couponCodeReducer from './slice/coupon.slice';
 import authReducer from './slice/auth.slice';
+import alertReducer from './slice/alert.slice';
 
 // export const intialState = {
 //     value: 0
@@ -25,5 +26,6 @@ export const rootReducer = combineReducers({
     product: productReducer,
     cart: cartReducer,
     coupon: couponCodeReducer,
-    auth: authReducer
+    auth: authReducer,
+    alert: alertReducer
 });

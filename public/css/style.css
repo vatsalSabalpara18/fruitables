@@ -495,3 +495,14 @@
 }
 /*** Footer End ***/
 
+
+.light {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+.dark {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+}
+

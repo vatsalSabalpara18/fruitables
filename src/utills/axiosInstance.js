@@ -14,5 +14,27 @@ axiosInstance.interceptors.request.use(function (config) {
     return Promise.reject(error);
 });
 
+axiosInstance.interceptors.response.use(function (response) {
+
+    return response;
+}, async function (error) {
+
+    console.log(error);
+
+    if (error?.response && error?.response?.status === 401) {
+        try {
+            console.log("Call token gen apit");
+            await axios.post(API_BASE_URL + 'user/gen-new-token',{}, { withCredentials: true });
+
+            return axiosInstance(error?.config);
+        } catch (error) {
+            console.log("error in the gen new token");
+           return Promise.reject(error);
+        }
+    }
+
+    return Promise.reject(error);
+});
+
 export default axiosInstance;
 

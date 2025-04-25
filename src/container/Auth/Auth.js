@@ -1,15 +1,19 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useFormik } from 'formik';
-import { object, string } from 'yup';
+import { number, object, ref, string } from 'yup';
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, registerUser } from "../../redux/reducer/slice/auth.slice";
+import { forgotPassword, loginUser, registerUser, resetPassword, verifyOTP } from "../../redux/reducer/slice/auth.slice";
 import { useNavigate } from "react-router-dom";
+import { ThemeContext } from "../../context/ThemeProvider";
 
 function Auth() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { theme } = useContext(ThemeContext)
     const auth = useSelector(s => s.auth);
     const [type, setType] = useState("login");
+    const [typeIsPass, setTypeIsPass] = useState(false);
+    const [userEmail, setUserEmail] = useState('');
 
     let initialValue = {}, validationSchema = {};
 
@@ -35,6 +39,26 @@ function Auth() {
             password: string().required(),
         }
 
+    } else if (type === 'OTP') {
+        initialValue = {
+            otp: ''
+        }
+
+        validationSchema = {
+            otp: number().required()
+        }
+
+    } else if (type === 'conform_password') {
+        initialValue = {
+            password: '',
+            conform_password: ''
+        }
+
+        validationSchema = {
+            password: number().required(),
+            conform_password: number().required().oneOf([ref('password')], "password must match")
+        }
+
     } else {
         initialValue = {
             email: ''
@@ -51,34 +75,88 @@ function Auth() {
         initialValues: initialValue,
         enableReinitialize: true,
         validationSchema: userSchema,
-        onSubmit: (values, { resetForm }) => {
+        onSubmit: async (values, { resetForm }) => {
             // alert(JSON.stringify(values, null, 2));
             if (type === 'login') {
                 dispatch(loginUser(values));
-            } else if (type === 'register') {
-                dispatch(registerUser({ ...values, role: 'user' }));
-            } else {
 
+            } else if (type === 'register') {
+                const res = await dispatch(registerUser({ ...values, role: 'user' }));
+                console.log("res", res);
+
+                if (res.type == "auth/registerUser/fulfilled") {
+                    setType('OTP');
+                    setUserEmail(values?.email);
+                }
+            } else if (type === 'OTP') {                
+                const res = await dispatch(verifyOTP({ email: userEmail, otp: values?.otp }))
+
+                if (res.type == "auth/verifyOTP/fulfilled") {
+                    if(typeIsPass){
+                        setType('conform_password')
+                    } else {
+                        setType('login');
+                        setUserEmail('');
+                    }
+                }
+
+            } else if(type == 'password'){
+                const res = await dispatch(forgotPassword(values))
+
+                if (res.type === 'auth/forgotPassword/fulfilled'){
+                    setType('OTP');
+                    setTypeIsPass(true);                
+                    localStorage.setItem('userEmail', values?.email);
+                    setUserEmail(values?.email);
+                }
+            } else if (type == "conform_password"){
+                const res = await dispatch(resetPassword({password: values?.password, email: userEmail}))
+
+                if (res.type == "auth/resetPassword/fulfilled"){
+                    setType('login');
+                    setTypeIsPass(false);
+                    localStorage.removeItem('userEmail');
+                    setUserEmail('');
+                }
             }
             resetForm();
         },
     });
-
+    
     const { handleSubmit, handleChange, handleBlur, values, errors, touched, setValues, resetForm, setFieldValue } = formik;
 
-    if(auth.isValid){
+    if (auth.isValid) {
         navigate('/');
     }
 
+    const googleLogin = () => {
+        try {
+            window.location.href = 'http://localhost:8081/api/v1/user/google';
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        const userEmail = localStorage.getItem('userEmail');
+
+        if (userEmail) {
+            setType('OTP');
+            setUserEmail(userEmail);
+        }
+    }, []);
+
     return (
-        <>
+        <div className={theme}>
             {/* Single Page Header start */}
             <div className="container-fluid page-header py-5">
                 <h1 className="text-center text-white display-6">
                     {
                         type === "login" ? "Login" :
                             type === "password" ? "Forgot Password" :
-                                "Register"
+                                type === 'OTP' ? "Verify OTP" :
+                                    type === 'conform_password' ? "Password Conformation" :                                
+                                    "Register"
                     }
                 </h1>
                 <ol className="breadcrumb justify-content-center mb-0">
@@ -92,7 +170,9 @@ function Auth() {
                         {
                             type === "login" ? "Login" :
                                 type === "password" ? "Forgot Password" :
-                                    "Register"
+                                    type === 'OTP' ? "Verify OTP" :
+                                        type === 'conform_password' ? "Password Conformation" :
+                                        "Register"
                         }
                     </li>
                 </ol>
@@ -125,22 +205,28 @@ function Auth() {
                                             </>
                                         ) : null
                                     }
-                                    <input
-                                        type="email"
-                                        className="w-100 form-control border-0 py-3 mb-4"
-                                        placeholder="Enter Your Email"
-                                        name="email"
-                                        value={values.email}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                    />
-                                    <span>
-                                        {
-                                            errors.email && touched.email ? errors.email : null
-                                        }
-                                    </span>
                                     {
-                                        type !== "password" ? (
+                                        type == 'register' || type == "login" || type == 'password' ? (
+                                            <>
+                                                <input
+                                                    type="email"
+                                                    className="w-100 form-control border-0 py-3 mb-4"
+                                                    placeholder="Enter Your Email"
+                                                    name="email"
+                                                    value={values.email}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                />
+                                                <span>
+                                                    {
+                                                        errors.email && touched.email ? errors.email : null
+                                                    }
+                                                </span>
+                                            </>
+                                        ) : null
+                                    }
+                                    {
+                                        (type === 'register' || type === 'login' || type === 'conform_password') ? (
                                             <>
                                                 <input
                                                     type="password"
@@ -159,6 +245,46 @@ function Auth() {
                                             </>
                                         ) : null
                                     }
+                                    {
+                                        type === 'conform_password' ? (
+                                            <>
+                                                <input
+                                                    type="password"
+                                                    className="w-100 form-control border-0 py-3 mb-4"
+                                                    placeholder="Enter Your Password"
+                                                    name="conform_password"
+                                                    value={values.conform_password}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                />
+                                                <span>
+                                                    {
+                                                        errors.conform_password && touched.conform_password ? errors.conform_password : null
+                                                    }
+                                                </span>
+                                            </>
+                                        ) : null
+                                    }
+                                    {
+                                        type === 'OTP' ? (
+                                            <>
+                                                <input
+                                                    type="text"
+                                                    className="w-100 form-control border-0 py-3 mb-4"
+                                                    placeholder="Enter Your OTP"
+                                                    name="otp"
+                                                    value={values.otp}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                />
+                                                <span>
+                                                    {
+                                                        errors.otp && touched.otp ? errors.otp : null
+                                                    }
+                                                </span>
+                                            </>
+                                        ) : null
+                                    }
                                     <button
                                         className="w-100 btn form-control border-secondary py-3 bg-white text-primary "
                                         type="submit"
@@ -166,7 +292,9 @@ function Auth() {
                                         {
                                             type === "login" ? "Login" :
                                                 type === "password" ? "Submit" :
-                                                    "Register"
+                                                    type === 'OTP' ? "Verify OTP" :
+                                                        type === 'conform_password' ? "Create Password" :
+                                                        "Register"
                                         }
                                     </button>
                                 </form>
@@ -186,13 +314,21 @@ function Auth() {
                                         </> : null
                                     }
                                 </div>
+                                <div>
+                                    <button
+                                        className="w-100 btn form-control border-secondary py-3 bg-white text-primary "
+                                        onClick={googleLogin}
+                                    >
+                                        Sign In with Google
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             {/* <!-- AUTH End --> */}
-        </>
+        </div>
     );
 }
 
