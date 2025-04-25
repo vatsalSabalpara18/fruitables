@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useParams } from "react-router-dom";
 import { getProducts } from "../../redux/reducer/slice/product.slice";
@@ -75,8 +75,8 @@ function Shop(props) {
         return finalProductList;
     }
 
-    const productData = handleProductDisplay();
-
+    const productData = useMemo(() => handleProductDisplay(), [priceRange, currentCategory, selectedOption, searchQuery, productList]);
+    // const productData = handleProductDisplay();
     useEffect(() => {
         // if (id) {
         //     setProductData(
@@ -90,7 +90,7 @@ function Shop(props) {
 
     const handlePriceChange = useDebouncedCallback((value) => {
         setPriceRange(value)
-        handleProductDisplay()
+        // handleProductDisplay()
         //     if (prevState.length && value > 0) {
         //     } else {
         //         return productList?.filter((item) => {
@@ -184,7 +184,7 @@ function Shop(props) {
                                                                     }
                                                                     onClick={() => {
                                                                         setCurrentCategory("All Categories");
-                                                                        handleProductDisplay();
+                                                                        // handleProductDisplay();
                                                                     }}
                                                                 >
                                                                     All Categories

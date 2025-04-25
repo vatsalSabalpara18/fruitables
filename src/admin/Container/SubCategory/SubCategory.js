@@ -17,11 +17,13 @@ import { useFormik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { addSubCategories, deleteCategories, getSubCategories, updateCategories } from '../../../redux/reducer/slice/subcategory.slice';
 import { API_BASE_URL, IMAGE_URL } from '../../../utills/baseURL';
-import axios from 'axios';
+import { ThemeContext } from '../../../context/ThemeProvider';
 import { getCategories } from '../../../redux/reducer/slice/category.slice';
+import { useContext } from 'react';
 
 function SubCategory(props) {
     const dispatch = useDispatch();
+    const { theme } = useContext(ThemeContext);
     const [open, setOpen] = React.useState(false);
     const [isUpdate, setIsUpdate] = React.useState(false);
 

@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { io } from 'socket.io-client';
 import { CHAT_URL } from '../../utills/baseURL';
 import { ThemeContext } from '../../context/ThemeProvider';
 
 const Chat = () => {
 
-    const socket = io(CHAT_URL);
+    const socket = useMemo(() => io(CHAT_URL), []);
     const { theme } = useContext(ThemeContext)
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
