@@ -48,7 +48,7 @@ export const verifyOTP = createAsyncThunk(
     'auth/verifyOTP',
     async (data, { dispatch }) => {
         try {
-            const response = await axiosInstance.post('/user/verify-otp', data);
+            const response = await axiosInstance.post('/user/verify-otp-email', data);
             console.log(response.data);
 
             if (response.data?.success) {
