@@ -22,7 +22,7 @@ function Category(props) {
     const [isUpdate, setIsUpdate] = React.useState(false);
 
     const getCategoryData = () => {
-       dispatch(getCategories());
+        dispatch(getCategories());
     }
 
     useEffect(() => {
@@ -45,19 +45,19 @@ function Category(props) {
     }
 
     const columns = [
-        { 
-            field: 'cat_img', 
-            headerName: 'Category Image', 
+        {
+            field: 'cat_img',
+            headerName: 'Category Image',
             width: 150,
             renderCell: (params) => (
-                <img 
-                    src={ IMAGE_URL + params.row.cat_img}
-                    alt={ params.row.cat_img }
+                <img
+                    src={params.row.cat_img}
+                    alt={params.row.cat_img}
                     height={50}
                     width={50}
                 />
             )
-            
+
         },
         { field: 'name', headerName: 'Name', width: 150 },
         { field: 'description', headerName: 'Description', width: 450 },
@@ -82,27 +82,27 @@ function Category(props) {
         name: string().required(),
         description: string().required(),
         cat_img: mixed()
-      .required("You need provide the file.")
-      .test("profile", "The file is too large", (value) => {
-        if (typeof value === "string") {
-          return true
-        } else if (typeof value === "object") {
-          return value && value.size <= 2000000;
-        }
-      })
-      .test(
-        "profile",
-        "only the following formats are allowed: jpeg, jpg & png",
-        (value) => {
-          if (typeof value === "string") {
-            return true
-          } else if (typeof value === "object") {
-            return (
-              value && (value.type === "image/jpeg" || value.type === "image/png")
-            );
-          }
-        }
-      ),
+            .required("You need provide the file.")
+            .test("profile", "The file is too large", (value) => {
+                if (typeof value === "string") {
+                    return true
+                } else if (typeof value === "object") {
+                    return value && value.size <= 2000000;
+                }
+            })
+            .test(
+                "profile",
+                "only the following formats are allowed: jpeg, jpg & png",
+                (value) => {
+                    if (typeof value === "string") {
+                        return true
+                    } else if (typeof value === "object") {
+                        return (
+                            value && (value.type === "image/jpeg" || value.type === "image/png")
+                        );
+                    }
+                }
+            ),
     })
 
     const addCategory = (values) => {
@@ -194,7 +194,7 @@ function Category(props) {
                                 <img
                                     src={
                                         typeof values?.cat_img === "string"
-                                            ? IMAGE_URL + values?.cat_img
+                                            ? values?.cat_img
                                             : values.cat_img !== null ? URL.createObjectURL(values.cat_img) : 'img/avatar.jpg'
                                         // :  URL.createObjectURL(values.cat_img)
                                     }
@@ -280,9 +280,9 @@ export default Category;
 //         setCategoryTable(newData);
 //     }
 
-//     const handleEdit = (data) => {                              
+//     const handleEdit = (data) => {
 //         handleClickOpen();
-//         // setIsEdit(index);        
+//         // setIsEdit(index);
 //         setIsUpdate(true);
 //         setValues(data);
 //     }
@@ -312,7 +312,7 @@ export default Category;
 //         description: string().required(),
 //     })
 
-//     const updateCategory = (values) => {  
+//     const updateCategory = (values) => {
 //         const localData = JSON.parse(localStorage.getItem('category'));
 //         const index = localData.findIndex((item) => item.id === values.id);
 //         localData[index] = values;
@@ -347,9 +347,9 @@ export default Category;
 //         },
 //         validationSchema: categorySchema,
 //         onSubmit: (values, { resetForm }) => {
-//             // alert(JSON.stringify(values, null, 2));            
+//             // alert(JSON.stringify(values, null, 2));
 //             if(isUpdate){
-//                 updateCategory(values);                
+//                 updateCategory(values);
 //             } else {
 //                 addCategory(values);
 //             }
@@ -363,7 +363,7 @@ export default Category;
 //     const handleClose = () => {
 //         setOpen(false);
 //         resetForm();
-//         // setIsEdit(null);  
+//         // setIsEdit(null);
 //         setIsUpdate(false);
 //     };
 
