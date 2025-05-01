@@ -195,7 +195,7 @@ function Category(props) {
                                     src={
                                         typeof values?.cat_img === "string"
                                             ? values?.cat_img
-                                            : values.cat_img !== null ? URL.createObjectURL(values.cat_img) : 'img/avatar.jpg'
+                                            : values.cat_img !== null ? URL.createObjectURL(values.cat_img?.url) : 'img/avatar.jpg'
                                         // :  URL.createObjectURL(values.cat_img)
                                     }
                                     height={"100"}
