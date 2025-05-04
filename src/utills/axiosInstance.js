@@ -22,8 +22,7 @@ axiosInstance.interceptors.response.use(function (response) {
     console.log(error);
 
     if (error?.response && error?.response?.status === 401) {
-        try {
-            console.log("Call token gen apit");
+        try {            
             await axios.post(API_BASE_URL + 'user/gen-new-token',{}, { withCredentials: true });
 
             return axiosInstance(error?.config);

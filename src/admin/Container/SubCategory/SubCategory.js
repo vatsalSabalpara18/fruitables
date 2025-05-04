@@ -52,8 +52,8 @@ function SubCategory(props) {
             renderCell: (params) => {
                return (
                     <img
-                       src={IMAGE_URL + params.row.sub_cat_img}
-                       alt={params.row.sub_cat_img}
+                       src={params.row.sub_cat_img?.url}
+                       alt={params.row.sub_cat_img?.url}
                         height={50}
                         width={50}
                     />
@@ -105,7 +105,7 @@ function SubCategory(props) {
         sub_cat_img: mixed()
             .required("You need provide the file.")
             .test("profile", "The file is too large", (value) => {
-                if (typeof value === "string") {
+                if (typeof value === "string" || typeof value?.url === "string") {
                     return true
                 } else if (typeof value === "object") {
                     return value && value.size <= 2000000;
@@ -115,7 +115,7 @@ function SubCategory(props) {
                 "profile",
                 "only the following formats are allowed: jpeg, jpg & png",
                 (value) => {
-                    if (typeof value === "string") {
+                    if (typeof value === "string" || typeof value?.url === "string") {
                         return true
                     } else if (typeof value === "object") {
                         return (
@@ -245,9 +245,9 @@ function SubCategory(props) {
                                 />
                                 <img
                                     src={
-                                        typeof values?.sub_cat_img === "string"
-                                            ? IMAGE_URL + values?.sub_cat_img
-                                            : values.sub_cat_img !== null ? URL.createObjectURL(values.sub_cat_img) : 'img/avatar.jpg'
+                                        typeof values?.sub_cat_img?.url === "string"
+                                            ? values?.sub_cat_img?.url
+                                            : values.sub_cat_img ? URL.createObjectURL(values.sub_cat_img) : 'img/avatar.jpg'
                                         // :  URL.createObjectURL(values.cat_img)
                                     }
                                     height={"100"}

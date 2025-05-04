@@ -3,6 +3,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import axios from "axios"
 import { API_BASE_URL } from "../../../utills/baseURL"
+import axiosInstance from "../../../utills/axiosInstance"
 
 // const initialState = {
 //     isLoading: false,
@@ -51,7 +52,7 @@ export const getSubCategories = createAsyncThunk(
     'subCategory/getSubCategories',
     async () => {
         try {
-            const response = await axios.get(API_BASE_URL + '/sub-categories/list-subcategories');
+            const response = await axiosInstance.get('/sub-categories/list-subcategories');
             return response.data?.data
         } catch (error) {
             console.error(error)
@@ -63,8 +64,8 @@ export const getSubCategoryByCategory = createAsyncThunk(
     'subCategory/getSubCategoryByCategory',
     async (category) => {
         try {
-            if(!category) return;
-            const response = await axios.get(API_BASE_URL + "sub-categories/get-subcategories/" + category);
+            if (!category) return;
+            const response = await axiosInstance.get("sub-categories/get-subcategories/" + category);
             return response.data?.data
         } catch (error) {
             console.error(error);
@@ -75,12 +76,12 @@ export const getSubCategoryByCategory = createAsyncThunk(
 export const addSubCategories = createAsyncThunk(
     'subCategory/addSubCategories',
     async (data) => {
-        try {            
-            const response = await axios.post(API_BASE_URL + 'sub-categories/add-subcategory', data, {
+        try {
+            const response = await axiosInstance.post('sub-categories/add-subcategory', data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
-            })            
+            })
             return response.data?.data
         } catch (error) {
             console.error(error)
@@ -91,7 +92,7 @@ export const deleteCategories = createAsyncThunk(
     "subCategory/deleteCategories",
     async (id) => {
         try {
-            const response = await axios.delete(API_BASE_URL + 'sub-categories/delete-subcategory/' + id)            
+            const response = await axiosInstance.delete('sub-categories/delete-subcategory/' + id)
             return response.data?.data;
         } catch (error) {
             console.error(error)
@@ -102,12 +103,13 @@ export const deleteCategories = createAsyncThunk(
 export const updateCategories = createAsyncThunk(
     "subCategory/updateCategories",
     async (data) => {
-        try {             
-            const response = await axios.put(`${API_BASE_URL}sub-categories/update-subcategory/${data?._id}`, data, {
+        try {
+            const { name, category, description, sub_cat_img } = data
+            const response = await axiosInstance.put(`sub-categories/update-subcategory/${data?._id}`, { name, category, description, sub_cat_img }, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
-            })            
+            })
             return response.data?.data
         } catch (error) {
             console.error(error)
@@ -131,7 +133,7 @@ const subCategorySlice = createSlice({
         })
         builder.addCase(deleteCategories.fulfilled, (state, action) => {
             state.subCategoryData = state.subCategoryData.filter((v) => v._id !== action.payload._id);
-        }) 
+        })
         builder.addCase(getSubCategoryByCategory.fulfilled, (state, action) => {
             state.subCatByCat = action.payload;
         })
