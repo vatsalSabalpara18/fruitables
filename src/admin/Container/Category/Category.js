@@ -83,8 +83,8 @@ function Category(props) {
         description: string().required(),
         cat_img: mixed()
             .required("You need provide the file.")
-            .test("profile", "The file is too large", (value) => {
-                if (typeof value === "string") {
+            .test("profile", "The file is too large", (value) => {                
+                if (typeof value === "string" || typeof value?.url === "string") {
                     return true
                 } else if (typeof value === "object") {
                     return value && value.size <= 2000000;
@@ -94,7 +94,7 @@ function Category(props) {
                 "profile",
                 "only the following formats are allowed: jpeg, jpg & png",
                 (value) => {
-                    if (typeof value === "string") {
+                    if (typeof value === "string" || typeof value?.url === "string") {
                         return true
                     } else if (typeof value === "object") {
                         return (
@@ -193,9 +193,9 @@ function Category(props) {
                                 />
                                 <img
                                     src={
-                                        typeof values?.cat_img === "string"
-                                            ? values?.cat_img
-                                            : values.cat_img !== null ? URL.createObjectURL(values.cat_img) : 'img/avatar.jpg'
+                                        typeof values?.cat_img?.url === "string"
+                                            ? values?.cat_img?.url
+                                            : values.cat_img ? URL.createObjectURL(values.cat_img) : 'img/avatar.jpg'
                                         // :  URL.createObjectURL(values.cat_img)
                                     }
                                     height={"100"}
