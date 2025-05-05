@@ -52,7 +52,7 @@ function Category(props) {
             renderCell: (params) => (
                 <img
                     src={params.row.cat_img?.url}
-                    alt={params.row.cat_img?.url}
+                    alt={params.row.cat_img?.public_id}
                     height={50}
                     width={50}
                 />
