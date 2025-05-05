@@ -70,7 +70,7 @@ function Product(props) {
         product_img: mixed()
             .required("You need provide the file.")
             .test("profile", "The file is too large", (value) => {
-                if (typeof value === "string") {
+                if (typeof value === "string" || typeof value?.url === "string") {
                     return true;
                 } else if (typeof value === "object") {
                     return value && value.size <= 2000000;
@@ -80,7 +80,7 @@ function Product(props) {
                 "profile",
                 "only the following formats are allowed: jpeg, jpg & png",
                 (value) => {
-                    if (typeof value === "string") {
+                    if (typeof value === "string" || typeof value?.url === "string") {
                         return true;
                     } else if (typeof value === "object") {
                         return (
@@ -157,8 +157,8 @@ function Product(props) {
             width: 120,
             renderCell: (params) => (
                 <img
-                    src={IMAGE_URL + params.row.product_img}
-                    alt={params.row.product_img}
+                    src={params.row.product_img?.url}
+                    alt={params.row.product_img?.public_id}
                     height={50}
                     width={50}
                 />
@@ -356,9 +356,9 @@ function Product(props) {
                                 />
                                 <img
                                     src={
-                                        typeof values?.product_img === "string"
-                                            ? IMAGE_URL + values?.product_img
-                                            : values?.product_img !== null
+                                        typeof values?.product_img?.url === "string"
+                                            ? values?.product_img?.url
+                                            : values?.product_img
                                                 ? URL.createObjectURL(values.product_img)
                                                 : "img/avatar.jpg"
                                         // :  URL.createObjectURL(values.product_img)

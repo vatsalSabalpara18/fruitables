@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import axios from "axios"
 import { API_BASE_URL } from "../../../utills/baseURL"
+import axiosInstance from "../../../utills/axiosInstance"
 
 const initialState = {
     isLoading: false,
@@ -13,7 +14,7 @@ export const getProducts = createAsyncThunk(
     'product/getProducts',
     async () => {
         try {
-            const response = await axios.get(API_BASE_URL + 'products/list-products');
+            const response = await axiosInstance.get('products/list-products');
             return response.data?.data
         } catch (error) {
             console.error(error)
@@ -25,7 +26,7 @@ export const addProduct = createAsyncThunk(
     'product/addProduct',
     async (data) => {
         try {
-            const response = await axios.post(API_BASE_URL + 'products/add-product', data, {
+            const response = await axiosInstance.post('products/add-product', data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -40,7 +41,7 @@ export const deleteProduct = createAsyncThunk(
     "product/deleteProduct",
     async (id) => {
         try {
-            const response = await axios.delete(API_BASE_URL + 'products/delete-product/' + id);      
+            const response = await axiosInstance.delete('products/delete-product/' + id);      
             return response.data?.data;
         } catch (error) {
             console.error(error)
@@ -51,8 +52,9 @@ export const deleteProduct = createAsyncThunk(
 export const updateProduct = createAsyncThunk(
     "product/updateProduct",
     async (data) => {
+        const { name, category, sub_category, description, price, product_img } = data
         try {
-            const response = await axios.put(`${API_BASE_URL}products/update-product/${data?._id}`, data, {
+            const response = await axiosInstance.put(`products/update-product/${data?._id}`, { name, category, sub_category, description, price, product_img }, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
