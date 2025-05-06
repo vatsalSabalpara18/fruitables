@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { IMAGE_URL } from '../../utills/baseURL';
 import './cart.css'
 import { decrementQty, incrementQty, removeProduct } from '../../redux/reducer/slice/cart.slice';
 import { getCoupons } from '../../redux/reducer/slice/coupon.slice';
@@ -33,15 +32,15 @@ function Cart(props) {
                 qty: cart_Item?.qty
             }
         }
-    })    
+    })
 
-    const sub_total = finalCartData?.reduce((acc, item) => acc + (item?.qty * item?.price) ,0).toFixed(2);
+    const sub_total = finalCartData?.reduce((acc, item) => acc + (item?.qty * item?.price), 0).toFixed(2);
 
-    const total = useMemo( () => Object.keys(appliedCoupon).length ? parseFloat(sub_total) + 3.00 - (appliedCoupon?.discount * parseFloat(sub_total) / 100 ) : parseFloat(sub_total) + 3.00 , [appliedCoupon, sub_total]) ;
+    const total = useMemo(() => Object.keys(appliedCoupon).length ? parseFloat(sub_total) + 3.00 - (appliedCoupon?.discount * parseFloat(sub_total) / 100) : parseFloat(sub_total) + 3.00, [appliedCoupon, sub_total]);
 
     const handleApplyCoupon = () => {
         const match = couponCode.find((item) => item?.name === coupon);
-        if(match) {
+        if (match) {
             setAppliedCoupon(match);
             setCouponError('');
         } else {
@@ -85,29 +84,29 @@ function Cart(props) {
                                                 <tr key={cart_item?._id}>
                                                     <th scope="row">
                                                         <div className="d-flex align-items-center">
-                                                            <img src={IMAGE_URL + cart_item?.product_img || "img/vegetable-item-3.png"} className="img-fluid me-5 rounded-circle" style={{ width: 80, height: 80 }} alt />
+                                                            <img src={cart_item?.product_img?.url || "img/vegetable-item-3.png"} className="img-fluid me-5 rounded-circle" style={{ width: 80, height: 80 }} alt={cart_item?.product_img?.public_id} />
                                                         </div>
                                                     </th>
                                                     <td>
                                                         <p className="mb-0 mt-4">{cart_item?.name}</p>
                                                     </td>
                                                     <td>
-                                                        <p className="mb-0 mt-4">{cart_item?.price} $</p>
+                                                        <p className="mb-0 mt-4">{cart_item?.price} $</p>cart_item
                                                     </td>
                                                     <td>
                                                         <div className="input-group quantity mt-4" style={{ width: 100 }}>
                                                             <div className="input-group-btn">
-                                                                <button 
+                                                                <button
                                                                     className="btn btn-sm btn-minus rounded-circle bg-light border"
                                                                     onClick={() => dispatch(decrementQty(cart_item?._id))}
-                                                                    disabled={cart_item?.qty > 1 ? false : true }
+                                                                    disabled={cart_item?.qty > 1 ? false : true}
                                                                 >
                                                                     <i className="fa fa-minus" />
                                                                 </button>
                                                             </div>
                                                             <span type="text" className="form-control form-control-sm text-center border-0" >{cart_item?.qty}</span>
                                                             <div className="input-group-btn">
-                                                                <button 
+                                                                <button
                                                                     className="btn btn-sm btn-plus rounded-circle bg-light border"
                                                                     onClick={() => dispatch(incrementQty(cart_item?._id))}
                                                                 >
@@ -117,13 +116,13 @@ function Cart(props) {
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <p className="mb-0 mt-4">{ (cart_item?.price * cart_item?.qty).toFixed(2) } $</p>
+                                                        <p className="mb-0 mt-4">{(cart_item?.price * cart_item?.qty).toFixed(2)} $</p>
                                                     </td>
                                                     <td>
-                                                        <button 
+                                                        <button
                                                             className="btn btn-md rounded-circle bg-light border mt-4"
                                                             onClick={() => dispatch(removeProduct(cart_item?._id))}
-                                                    >
+                                                        >
                                                             <i className="fa fa-times text-danger" />
                                                         </button>
                                                     </td>
@@ -213,12 +212,12 @@ function Cart(props) {
                         <input type="text" className="border-0 border-bottom rounded me-5 py-3 mb-4" value={coupon} onChange={(e) => setCoupon(e.target.value)} placeholder="Coupon Code" />
                         <button className="btn border-secondary rounded-pill px-4 py-3 text-primary" onClick={handleApplyCoupon} type="button">Apply Coupon</button>
                     </div>
-                    <div style={{color:'red'}}>{couponError ?? ""}</div>
+                    <div style={{ color: 'red' }}>{couponError ?? ""}</div>
                     <div className="row g-4 justify-content-end">
                         <div className="col-8" />
                         <div className="col-sm-8 col-md-7 col-lg-6 col-xl-4">
                             <div className="bg-light rounded">
-                                <div className="p-4" style={{color: 'black'}}>
+                                <div className="p-4" style={{ color: 'black' }}>
                                     <h1 className="display-6 mb-4">Cart <span className="fw-normal">Total</span></h1>
                                     <div className="d-flex justify-content-between mb-4">
                                         <h5 className="mb-0 me-4">Subtotal:</h5>
@@ -242,7 +241,7 @@ function Cart(props) {
                                 </div>
                                 <div className="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
                                     <h5 className="mb-0 ps-4 me-4">Total</h5>
-                                    <p className="mb-0 pe-4" style={{color: 'black'}} >${sub_total ? total.toFixed(2) ?? 0 : 0}</p>
+                                    <p className="mb-0 pe-4" style={{ color: 'black' }} >${sub_total ? total.toFixed(2) ?? 0 : 0}</p>
                                 </div>
                                 <button className="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4" type="button">Proceed Checkout</button>
                             </div>

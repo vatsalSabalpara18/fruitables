@@ -4,7 +4,6 @@ import { NavLink, useParams } from "react-router-dom";
 import { getProducts } from "../../redux/reducer/slice/product.slice";
 import { getCategories } from "../../redux/reducer/slice/category.slice";
 import { getSubCategories } from "../../redux/reducer/slice/subcategory.slice";
-import { IMAGE_URL } from "../../utills/baseURL";
 import "../../assets/css/product.css";
 import { useDebouncedCallback } from "use-debounce";
 import { Slider } from "@mui/material";
@@ -448,7 +447,7 @@ function Shop(props) {
                                                             <div className="rounded position-relative fruite-item">
                                                                 <div className="fruite-img">
                                                                     <img
-                                                                        src={IMAGE_URL + product_Item?.product_img}
+                                                                        src={product_Item?.product_img?.url}
                                                                         className="img-fluid w-100 rounded-top product_img"
                                                                         alt={product_Item?.name}
                                                                     />

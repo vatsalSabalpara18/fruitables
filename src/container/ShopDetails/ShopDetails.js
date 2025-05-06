@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { getProducts } from "../../redux/reducer/slice/product.slice";
-import { IMAGE_URL } from "../../utills/baseURL";
 import { getCategories } from "../../redux/reducer/slice/category.slice";
 import { getSubCategories } from "../../redux/reducer/slice/subcategory.slice";
 import { addToCart } from "../../redux/reducer/slice/cart.slice";
@@ -43,7 +42,7 @@ function ShopDetails(props) {
         categoryList?.find((item) => item?._id === category)?.name ?? "";
 
     const handleAddToCart = () => {
-        dispatch(addToCart({pId: id, qty: count}));
+        dispatch(addToCart({ pId: id, qty: count }));
     };
 
     return (
@@ -72,7 +71,7 @@ function ShopDetails(props) {
                                     <div className="col-lg-6">
                                         <div className="rounded">
                                             <img
-                                                src={IMAGE_URL + product_img ?? "#"}
+                                                src={product_img?.url ?? "#"}
                                                 className="img-fluid rounded"
                                                 alt="Image"
                                                 width={500}
@@ -105,8 +104,8 @@ function ShopDetails(props) {
                                                     <i className="fa fa-minus" />
                                                 </button>
                                             </div>
-                                            <span 
-                                                className="form-control form-control-sm text-center border-0"                                                
+                                            <span
+                                                className="form-control form-control-sm text-center border-0"
                                             >{count}</span>
                                             <div className="input-group-btn">
                                                 <button
