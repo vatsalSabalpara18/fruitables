@@ -96,23 +96,19 @@ const categorySlice = createSlice({
             state.categories = state.categories.map((v) => v._id === action.payload._id ? action.payload : v);
         })
         builder.addCase(getCategories.rejected, (state, action) => {
-            state.isLoading = false;
-            state.categories = null;
+            state.isLoading = false;                        
             state.error = action.payload;
         })
         builder.addCase(createCategory.rejected, (state, action) => {
-            state.isLoading = false;
-            state.categories = null;
+            state.isLoading = false;                        
             state.error = action.payload;
         })
         builder.addCase(updateCategory.rejected, (state, action) => {
-            state.isLoading = false;
-            state.categories = null;
+            state.isLoading = false;                        
             state.error = action.payload;
         })
         builder.addCase(deleteCategories.rejected, (state, action) => {
-            state.isLoading = false;
-            state.categories = null;
+            state.isLoading = false;                        
             state.error = action.payload;
         })
 
