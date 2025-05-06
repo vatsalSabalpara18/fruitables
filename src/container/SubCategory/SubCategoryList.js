@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { IMAGE_URL } from '../../utills/baseURL';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useParams } from 'react-router-dom';
 import { getSubCategoryByCategory } from '../../redux/reducer/slice/subcategory.slice';
@@ -90,7 +89,7 @@ function SubCategoryList() {
                                                             <NavLink to={`/shop/${subCat_Item?._id}`}>
                                                                 <div className="rounded position-relative fruite-item">
                                                                     <div className="fruite-img">
-                                                                        <img src={IMAGE_URL + subCat_Item?.sub_cat_img} style={{ height: "160px" }} className="img-fluid w-100 rounded-top" alt={subCat_Item?.name} />
+                                                                        <img src={subCat_Item?.sub_cat_img?.url} style={{ height: "160px" }} className="img-fluid w-100 rounded-top" alt={subCat_Item?.name} />
                                                                     </div>
                                                                     <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{ top: 10, left: 10 }}>{categoryName}</div>
                                                                     <div className="p-4 border border-secondary border-top-0 rounded-bottom">

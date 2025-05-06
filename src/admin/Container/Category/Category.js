@@ -9,7 +9,6 @@ import { useFormik } from 'formik';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createCategory, deleteCategories, getCategories, updateCategory } from '../../../redux/reducer/slice/category.slice';
-import { IMAGE_URL } from '../../../utills/baseURL';
 
 const paginationModel = { page: 0, pageSize: 5 };
 

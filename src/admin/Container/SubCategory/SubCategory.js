@@ -16,7 +16,6 @@ import { mixed, number, object, string } from 'yup';
 import { useFormik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { addSubCategories, deleteCategories, getSubCategories, updateCategories } from '../../../redux/reducer/slice/subcategory.slice';
-import { API_BASE_URL, IMAGE_URL } from '../../../utills/baseURL';
 import { ThemeContext } from '../../../context/ThemeProvider';
 import { getCategories } from '../../../redux/reducer/slice/category.slice';
 import { useContext } from 'react';

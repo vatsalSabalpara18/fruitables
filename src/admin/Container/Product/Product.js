@@ -22,7 +22,6 @@ import { object, string, mixed, number } from "yup";
 import { useFormik } from "formik";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { IMAGE_URL } from "../../../utills/baseURL";
 import {
     addProduct,
     deleteProduct,
