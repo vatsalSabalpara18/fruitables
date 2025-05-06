@@ -1,9 +1,8 @@
 // import { createSlice } from "@reduxjs/toolkit";
 
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
-import axios from "axios"
-import { API_BASE_URL } from "../../../utills/baseURL"
 import axiosInstance from "../../../utills/axiosInstance"
+import { setAlert } from "./alert.slice"
 
 // const initialState = {
 //     isLoading: false,
@@ -50,59 +49,75 @@ const initialState = {
 
 export const getSubCategories = createAsyncThunk(
     'subCategory/getSubCategories',
-    async () => {
+    async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get('/sub-categories/list-subcategories');
-            return response.data?.data
+            if (response.data?.success) {
+                return response.data?.data
+            }
         } catch (error) {
             console.error(error)
+            return rejectWithValue(error?.response?.data?.message);
         }
     }
 )
 
 export const getSubCategoryByCategory = createAsyncThunk(
     'subCategory/getSubCategoryByCategory',
-    async (category) => {
+    async (category, { rejectWithValue }) => {
         try {
             if (!category) return;
             const response = await axiosInstance.get("sub-categories/get-subcategories/" + category);
-            return response.data?.data
+            if (response.data?.success) {
+                return response.data?.data
+            }
         } catch (error) {
             console.error(error);
+            return rejectWithValue(error?.response?.data?.message);
         }
     }
 )
 
 export const addSubCategories = createAsyncThunk(
     'subCategory/addSubCategories',
-    async (data) => {
+    async (data, { dispatch, rejectWithValue }) => {
         try {
             const response = await axiosInstance.post('sub-categories/add-subcategory', data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             })
-            return response.data?.data
+            if (response?.data?.success) {
+                dispatch(setAlert({ varriant: 'success', message: response?.data?.message }));
+                return response.data?.data
+            }
         } catch (error) {
             console.error(error)
+            dispatch(setAlert({ varriant: 'error', message: error?.response?.data?.message }));
+            return rejectWithValue(error?.response?.data?.message);
         }
     }
 )
 export const deleteCategories = createAsyncThunk(
     "subCategory/deleteCategories",
-    async (id) => {
+    async (id, { dispatch, rejectWithValue }) => {
         try {
             const response = await axiosInstance.delete('sub-categories/delete-subcategory/' + id)
-            return response.data?.data;
+            if (response.data?.success) {
+                dispatch(setAlert({ varriant: 'success', message: response?.data?.message }));
+                return response.data?.data;
+            }
         } catch (error) {
             console.error(error)
+            dispatch(setAlert({ varriant: 'error', message: error?.response?.data?.message }));
+            return rejectWithValue(error?.response?.data?.message);
         }
     }
 
 )
 export const updateCategories = createAsyncThunk(
     "subCategory/updateCategories",
-    async (data) => {
+    async (data, { dispatch, rejectWithValue }) => {
         try {
             const { name, category, description, sub_cat_img } = data
             const response = await axiosInstance.put(`sub-categories/update-subcategory/${data?._id}`, { name, category, description, sub_cat_img }, {
@@ -110,9 +125,14 @@ export const updateCategories = createAsyncThunk(
                     'Content-Type': 'multipart/form-data'
                 }
             })
-            return response.data?.data
+            if (response.data?.success) {
+                dispatch(setAlert({ varriant: 'success', message: response?.data?.message }));
+                return response.data?.data
+            }
         } catch (error) {
             console.error(error)
+            dispatch(setAlert({ varriant: 'error', message: error?.response?.data?.message }));
+            return rejectWithValue(error?.response?.data?.message)
         }
     }
 )
@@ -136,6 +156,26 @@ const subCategorySlice = createSlice({
         })
         builder.addCase(getSubCategoryByCategory.fulfilled, (state, action) => {
             state.subCatByCat = action.payload;
+        })
+        builder.addCase(getSubCategories.rejected, (state, action) => {
+            state.isLoading = false
+            state.error = action.payload
+        })
+        builder.addCase(addSubCategories.rejected, (state, action) => {
+            state.isLoading = false
+            state.error = action.payload
+        })
+        builder.addCase(updateCategories.rejected, (state, action) => {
+            state.isLoading = false
+            state.error = action.payload
+        })
+        builder.addCase(deleteCategories.rejected, (state, action) => {
+            state.isLoading = false
+            state.error = action.payload
+        })
+        builder.addCase(getSubCategoryByCategory.rejected, (state, action) => {
+            state.isLoading = false
+            state.error = action.payload
         })
     }
 })
